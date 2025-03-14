@@ -49,7 +49,7 @@ const TiptapEditor = ({ content, onUpdate }) => {
       console.log(`Editor updated: ${newContent}`);
       onUpdate(newContent);
     },
-    shouldRerenderOnTransaction: false, // Prevent re-renders on every update
+    shouldRerenderOnTransaction: false,
   });
 
   useEffect(() => {
@@ -60,7 +60,7 @@ const TiptapEditor = ({ content, onUpdate }) => {
     if (editor && content !== editor.getHTML()) {
       editor.commands.setContent(content || "");
     }
-  }, [editor, content]); // Update content only when prop changes
+  }, [editor, content]);
 
   return <EditorContent editor={editor} className="editor-content" />;
 };

@@ -26,7 +26,7 @@ const TitleEditor = ({ title, onChange, pageId }) => {
   };
 
   const handleEmojiSelect = async (emoji) => {
-    const newIcon = emoji.native; // emoji-mart uses 'native' for the emoji character
+    const newIcon = emoji.native;
     setIcon(newIcon);
     setShowPicker(false);
     if (pageId) {

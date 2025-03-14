@@ -10,7 +10,7 @@ const App = () => {
 
   return (
     <PageProvider>
-      <div className="flex h-screen">
+      <div className="app-container">
         <Sidebar />
         <PageEditor />
       </div>
