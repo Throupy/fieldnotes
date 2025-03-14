@@ -10,12 +10,14 @@
     --primary-button: #5C7CFA;
     --primary-button-hover: #4263EB;
     --border-radius: 6px;
+    --global-font-size: 16px;
   }
   
 body {
     background-color: var(--bg-color);
     color: var(--text-color);
     font-family: sans-serif;
+    font-size: var(--global-font-size);
 }
  
 .app-container {
@@ -33,16 +35,15 @@ body {
     overflow-y: auto;
     overflow-x: hidden;
     transition: width 0.2s ease;
+    font-size: calc(var(--global-font-size) - 4px);
 }
   
 .sidebar-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 14px;
-    font-weight: bold;
     color: var(--muted-text);
-    padding: 6px 10px;
+    padding: 8px 20px;
 }
 
 .sidebar-page-title {
@@ -71,7 +72,6 @@ body {
 }
 
 .plus-icon {
-    font-size: 12px;
     cursor: pointer;
     color: var(--muted-text);
     transition: color 0.2s;
@@ -212,7 +212,7 @@ body {
 }
   
 .page-icon {
-    font-size: 18px;
+    font-size: calc(var(--global-font-size) * 1);
     min-width: 20px;
     text-align: center;
 }
@@ -291,11 +291,11 @@ body {
     display: flex;
     align-items: center;
     margin-bottom: 10px;
-  }
+    font-size: calc(var(--global-font-size) * 2) !important;
+}
   
-  .title-input {
+.title-input {
     flex-grow: 1;
-    font-size: 2.2rem;
     font-weight: bold;
     background: transparent;
     color: var(--text-color);
@@ -303,13 +303,13 @@ body {
     outline: none;
     padding: 12px;
     border-bottom: 1px solid var(--sidebar-border);
-  }
+}
   
 .title-icon {
-    font-size: 1.5rem;
     margin-right: 10px;
     cursor: pointer;
     padding: 5px;
+    font-size: calc(var(--global-font-size) * 2)
 }
 
 .emoji-picker {
@@ -349,19 +349,6 @@ body {
       opacity: 0;
       transform: scale(0.9);
     }
-}
-
-.title-input {
-    width: 100%;
-    font-size: 2.2rem;
-    font-weight: bold;
-    background: transparent;
-    color: var(--text-color);
-    border: none;
-    outline: none;
-    padding: 12px;
-    margin-bottom: 10px;
-    border-bottom: 1px solid var(--sidebar-border);
 }
 
 /* tiptap editor */

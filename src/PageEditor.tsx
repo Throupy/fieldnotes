@@ -37,7 +37,7 @@ const PageEditor = () => {
   }, [selectedPageId]);
 
   return page ? (
-    <div className={`page-editor ${isActive ? "active" : ""}`}>
+    <div className="page-editor active">
       <TitleEditor
         title={title}
         onChange={setTitle}

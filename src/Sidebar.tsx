@@ -12,18 +12,13 @@ const Sidebar = () => {
   const sidebarRef = useRef<HTMLDivElement | null>(null);
 
   // Handle sidebar resizing start
-  const startResizing = useCallback((mouseDownEvent) => {
-    setIsResizing(true)
-  }, [])
-
-  const stopResizing = useCallback(() => {
-    setIsResizing(false)
-  }, [])
+  const startResizing = useCallback(() => setIsResizing(true), []);
+  const stopResizing = useCallback(() => setIsResizing(false), []);
 
   const resize = useCallback((mouseMoveEvent: MouseEvent) => {
     if (isResizing && sidebarRef.current) {
-      const sidebarLeft = sidebarRef.current.getBoundingClientRect().left; // Get current left position
-      const newWidth = Math.max(200, Math.min(mouseMoveEvent.clientX - sidebarLeft, 500)); // Min 200px, Max 500px
+      const sidebarLeft = sidebarRef.current.getBoundingClientRect().left; 
+      const newWidth = Math.max(200, Math.min(mouseMoveEvent.clientX - sidebarLeft, 500));
       setSidebarWidth(newWidth);
     }
   }, [isResizing]);
@@ -63,7 +58,7 @@ const Sidebar = () => {
               <span className="spacer"></span>
             )}
             <span className="page-icon">{page.icon}</span>
-            <span className="text-lg sidebar-page-title">{page.title || "Untitled"}</span>
+            <span className="sidebar-page-title">{page.title || "Untitled"}</span>
           </div>
 
           {expanded[page._id] && <div className="nested-pages">{renderPages(page._id, depth + 1)}</div>}
@@ -87,7 +82,7 @@ const Sidebar = () => {
     <div ref={sidebarRef} className="sidebar-container" style={{ width: `${sidebarWidth}px` }}>
       <div className="sidebar">
         <div className="sidebar-header">
-          <span>Private</span>
+          <span>Private ({pages.length})</span>
           <FaPlus className="plus-icon" onClick={() => addPage("Untitled Page", null)} />
         </div>
 
