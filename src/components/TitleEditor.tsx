@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import Picker from "@emoji-mart/react";
 import data from "@emoji-mart/data";
-import { usePages } from "./PageContext";
+import { usePages } from "../contexts/PageContext";
 
 const TitleEditor = ({ title, onChange, pageId }) => {
   const { pages, updatePageInContext } = usePages();

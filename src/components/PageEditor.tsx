@@ -1,8 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
-import { usePages } from "./PageContext";
-import TitleEditor from "./TitleEditor";
-import TiptapEditor from "./TiptapEditor";
-import "./styles.css";
+import { usePages } from "../contexts/PageContext";
+import TitleEditor from "../components/TitleEditor";
+import TiptapEditor from "../components/TiptapEditor";
 
 const PageEditor = () => {
   const { pages, selectedPageId, updatePageInContext } = usePages();

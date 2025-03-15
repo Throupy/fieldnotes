@@ -9,4 +9,6 @@
 - [X] New font
 - [ ] Ability to change font in settings
 - [ ] Fix animation - editor animation only runs on the first page selected
-- [ ] Smooth animations when expanding a set of nested pages
+- [X] Smooth animations when expanding a set of nested pages
+- [X] Centrally manage styles and improve UX overall
+- [X] Move files to directories

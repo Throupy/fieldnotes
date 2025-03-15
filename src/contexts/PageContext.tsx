@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect, ReactNode, useCallback } from "react";
-import { getPages, updatePage, createPage, deletePage } from "./pagesService";
+import { getPages, updatePage, createPage, deletePage } from "../services/pagesService";
 
 interface Page {
   _id: string;

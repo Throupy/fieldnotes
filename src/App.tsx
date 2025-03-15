@@ -1,9 +1,9 @@
-import { useAuth } from "./AuthContext"
-import Login from "./Login"
-import Sidebar from "./Sidebar";
-import PageEditor from "./PageEditor";
+import { useAuth } from "./contexts/AuthContext"
+import Login from "./components/Login"
+import Sidebar from "./components/Sidebar";
+import PageEditor from "./components/PageEditor";
 import { useEffect, useState } from "react";
-import { PageProvider } from "./PageContext";
+import { PageProvider } from "./contexts/PageContext";
 
 const App = () => {
   const { user, logout } = useAuth();
