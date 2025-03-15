@@ -2,10 +2,11 @@
 - [ ] Spell Checker
 - [X] Fix wrapping in sidebar (incl. nested pages)
 - [X] Resizable sidebar
-- [ ] Ability to change text size (e.g. with CTRL,+)
+- [X] Ability to change text size (e.g. with CTRL,+)
 - [ ] Workspaces, personal and shared.
 - [ ] Ability to upload images
 - [ ] Delete pages leaves orphans - implement cascade deleting
 - [X] New font
 - [ ] Ability to change font in settings
 - [ ] Fix animation - editor animation only runs on the first page selected
+- [ ] Smooth animations when expanding a set of nested pages
