@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import { FaPaintRoller, FaSync, FaUser } from "react-icons/fa";
+import { useAuth } from "../contexts/AuthContext";
 
 const SettingsModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const [activeSection, setActiveSection] = useState("Account");
   const [serverUrl, setServerUrl] = useState("");
   const [fontSize, setFontSize] = useState(16); 
   const [theme, setTheme] = useState("system"); 
+  const { user } = useAuth();
 
   const sections = [
     { name: "Account", icon: <FaUser /> },
@@ -41,7 +43,13 @@ const SettingsModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
             <h2 className="text-2xl font-bold">{activeSection}</h2>
           </div>
           <div className="bg-[var(--sidebar-bg)] p-4 rounded-[var(--border-radius)] border border-[var(--sidebar-border)]">
-            {activeSection === "Account" && <p>Account settings will go here.</p>}
+            {activeSection === "Account" && (
+              user === null ? (
+                <p>You are not logged in</p>
+              ) : (
+                <div>Logged in as {user}</div>
+              )
+            )}
             {activeSection === "Appearance" && (
               <div>
                 <div className="mb-4">
@@ -49,7 +57,7 @@ const SettingsModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                   <select
                     value={fontSize}
                     onChange={(e) => setFontSize(Number(e.target.value))}
-                    className="block w-full bg-[var(--bg-color)] border-[var(--sidebar-border)] rounded-md shadow-sm focus:ring-[var(--primary-button)] focus:border-[var(--primary-button)] text-[var(--text-color)] sm:text-sm"
+                    className="block w-full p-2 bg-[var(--bg-color)] border-[var(--sidebar-border)] rounded-md shadow-sm focus:ring-[var(--primary-button)] focus:border-[var(--primary-button)] text-[var(--text-color)] sm:text-sm"
                   >
                     {Array.from({ length: (24 - 12) / 2 + 1 }, (_, i) => 12 + i * 2).map((size) => (
                       <option key={size} value={size}>

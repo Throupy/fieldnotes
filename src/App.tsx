@@ -30,7 +30,7 @@ const App = () => {
     document.documentElement.style.setProperty("--global-font-size", `${fontSize}px`);
   }, [fontSize]);
 
-  return (
+  return user ? (
     <PageProvider>
       <div className="app-container">
         <Sidebar onSettingsClick={() => setIsSettingsOpen(true)} />
@@ -40,7 +40,10 @@ const App = () => {
         {isSettingsOpen && <SettingsModal onClose={() => setIsSettingsOpen(false)} />}
       </div>
     </PageProvider>
+  ) : (
+    <Login />
   );
+
 }
 
 export default App;
