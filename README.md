@@ -12,3 +12,4 @@
 - [X] Smooth animations when expanding a set of nested pages
 - [X] Centrally manage styles and improve UX overall
 - [X] Move files to directories
+- [X] Settings section

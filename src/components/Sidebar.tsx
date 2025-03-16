@@ -2,7 +2,7 @@ import { useEffect, useState, useRef, useCallback } from 'react';
 import { FaPlus, FaTrash, FaChevronRight, FaChevronDown, FaSearch, FaMagic, FaHome, FaInbox, FaCog, FaEdit } from 'react-icons/fa';
 import { usePages } from '../contexts/PageContext';
 
-const Sidebar = () => {
+const Sidebar = ({ onSettingsClick }: { onSettingsClick: () => void }) => {
   const { pages, setSelectedPageId, addPage, deletePageInContext } = usePages();
   const [contextMenu, setContextMenu] = useState<{
     x: number;
@@ -129,8 +129,6 @@ const Sidebar = () => {
       });
   };
 
-
-
   return (
     <div
       ref={sidebarRef}
@@ -147,7 +145,7 @@ const Sidebar = () => {
             <FaHome className="sidebar-icon" />
             <span className="sidebar-page-title">Home</span>
           </div>
-          <div className="sidebar-button">
+          <div className="sidebar-button" onClick={onSettingsClick}>
             <FaCog className="sidebar-icon" />
             <span className="sidebar-page-title">Settings</span>
           </div>
@@ -165,7 +163,6 @@ const Sidebar = () => {
         <div className="sidebar-pages-section">
           {renderPages(null)}
         </div>
-
 
         {contextMenu && (
           <div
