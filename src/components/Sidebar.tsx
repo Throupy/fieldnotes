@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { FaPlus, FaTrash, FaChevronRight, FaChevronDown, FaSearch, FaMagic, FaHome, FaInbox, FaCog, FaEdit } from 'react-icons/fa';
 import { usePages } from '../contexts/PageContext';
+import WorkspaceSwitcher from "./WorkspaceSwitcher";
 
 const Sidebar = ({ onSettingsClick }: { onSettingsClick: () => void }) => {
   const { pages, setSelectedPageId, addPage, deletePageInContext } = usePages();
@@ -137,6 +138,7 @@ const Sidebar = ({ onSettingsClick }: { onSettingsClick: () => void }) => {
     >
       <div className='sidebar'>
         <div className="sidebar-buttons-section">
+          <WorkspaceSwitcher />
           <div className="sidebar-button">
             <FaSearch className="sidebar-icon" />
             <span className="sidebar-page-title">Search</span>

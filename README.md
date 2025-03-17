@@ -18,3 +18,4 @@
 - [ ] Upload backend code to GH
 - [ ] Collaborative 'live updates' i.e. you don't have to switch pages to see updated. Allocate about 3 years to do this - expecting issues!!
 - [ ] Should workspace state be in Authcontext? probably not.
+- [ ] Style workspace switcher better
