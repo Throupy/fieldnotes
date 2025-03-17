@@ -151,7 +151,7 @@ const Sidebar = ({ onSettingsClick }: { onSettingsClick: () => void }) => {
           </div>
         </div>
         <div className="sidebar-divider"></div>
-        {/*
+
         <div className='sidebar-header'>
           <span>Private ({pages.length})</span>
           <FaPlus
@@ -159,7 +159,7 @@ const Sidebar = ({ onSettingsClick }: { onSettingsClick: () => void }) => {
             onClick={() => addPage('Untitled Page', null)}
           />
         </div>
-        */}
+
         <div className="sidebar-pages-section">
           {renderPages(null)}
         </div>

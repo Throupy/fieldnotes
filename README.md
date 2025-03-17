@@ -3,7 +3,8 @@
 - [X] Fix wrapping in sidebar (incl. nested pages)
 - [X] Resizable sidebar
 - [X] Ability to change text size (e.g. with CTRL,+)
-- [ ] Workspaces, personal and shared.
+- [X] Personal workspaces
+- [ ] Shared workspaces
 - [ ] Ability to upload images
 - [ ] Delete pages leaves orphans - implement cascade deleting
 - [X] New font
@@ -13,3 +14,6 @@
 - [X] Centrally manage styles and improve UX overall
 - [X] Move files to directories
 - [X] Settings section
+- [ ] Upon sync, need to refresh pages in context
+- [ ] Upload backend code to GH
+- [ ] Collaborative 'live updates' i.e. you don't have to switch pages to see updated. Allocate about 3 years to do this - expecting issues!!
