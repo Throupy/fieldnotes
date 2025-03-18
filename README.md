@@ -20,3 +20,4 @@
 - [ ] Should workspace state be in Authcontext? probably not.
 - [ ] Style workspace switcher better
 - [ ] Title update causes couchDB sync with every char entered
+- [ ] Context menu improvements - text wrapping and maybe use shadcn popover?
