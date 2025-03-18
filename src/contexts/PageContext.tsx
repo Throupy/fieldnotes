@@ -52,8 +52,9 @@ export const PageProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const addPage = useCallback(async (title: string, parentId: string | null = null) => {
-    await createPage(title, parentId);
+    const newPage = await createPage(title, parentId);
     await fetchPages();
+    setSelectedPageId(newPage._id);
   }, [fetchPages]);
 
   const deletePageInContext = useCallback(async (pageId: string) => {

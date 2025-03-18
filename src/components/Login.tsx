@@ -10,7 +10,6 @@ const Login = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("User submitted with isRegister value: ", isRegister);
     const success = isRegister
       ? await register(username, password)
       : await login(username, password);
@@ -41,7 +40,7 @@ const Login = () => {
               placeholder="Enter your username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="w-full p-3 bg-[var(--sidebar-bg)] border border-[var(--sidebar-border)] rounded-md text-[var(--text-color)] placeholder-gray-400 focus:ring-2 focus:ring-[var(--primary-button)] focus:border-[var(--primary-button)] transition-all"
+              className="w-full p-3 bg-[var(--sidebar-bg)] border border-[var(--sidebar-border)] rounded-md text-[var(--text-color)] placeholder-gray-400 focus:ring-1 focus:ring-[var(--primary-button)] focus:border-[var(--primary-button)] transition-all"
             />
           </div>
 

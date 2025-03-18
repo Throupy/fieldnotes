@@ -155,9 +155,9 @@ const Sidebar = ({ onSettingsClick }: { onSettingsClick: () => void }) => {
         <div className="sidebar-divider"></div>
 
         <div className='sidebar-header'>
-          <span>Private ({pages.length})</span>
+          <span className='text-md'>Workspace Pages ({pages.length})</span>
           <FaPlus
-            className='plus-icon'
+            className='plus-icon text-md'
             onClick={() => addPage('Untitled Page', null)}
           />
         </div>
