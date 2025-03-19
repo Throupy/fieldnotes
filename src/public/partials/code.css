@@ -1,6 +1,6 @@
 .ProseMirror {
   code {
-    @apply caret-white text-white bg-neutral-900 rounded-sm shadow-lg font-mono;
+    @apply caret-white text-red-500 bg-[#202020] p-1 rounded-sm shadow-lg font-mono;
 
     &::selection {
       @apply bg-white/30;
@@ -8,7 +8,7 @@
   }
 
   pre {
-    @apply caret-white bg-neutral-700 text-white rounded my-12 p-4 border border-black dark:bg-neutral-900 dark:border-neutral-800;
+    @apply caret-white text-white rounded my-4 p-4 shadow-lg overflow-x-auto text-wrap;
 
     *::selection {
       @apply bg-white/20;
@@ -73,7 +73,7 @@
 }
 
 pre {
-    background: #0D0D0D;
+    background-color: #202020;
     color: #FFF;
     font-family: 'JetBrainsMono', monospace;
     padding: 0.75rem 1rem;
@@ -83,7 +83,7 @@ pre {
         color: inherit;
         padding: 0;
         background: none;
-        font-size: 0.8rem;
+        font-size: 0.8em;
     }
 
     .hljs-comment,

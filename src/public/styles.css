@@ -73,6 +73,10 @@ body {
   font-size: var(--global-font-size);
 }
 
+.text-xs {
+    font-size: 0.7em !important;
+}
+
 .text-sm {
     font-size: 0.805em !important;
 }
@@ -89,10 +93,11 @@ body {
 }
 
 .workspace-switcher {
-    margin-bottom: 1rem;
     font-size: var(--global-font-size);
     color: var(--muted-text);
+    padding: 6px 8px;
 }
+
 
 .workspace-switcher select {
     width: 100%;
@@ -563,20 +568,8 @@ blockquote {
   font-style: italic;
 }
 
-ul[data-type="taskList"] {
-  padding-left: 0;
-}
-
-li[data-type="taskItem"] {
-  list-style: none;
-}
-
-li[data-type="taskItem"] input {
-  margin-right: 8px;
-}
-
 .ProseMirror {
-  @apply caret-black dark:caret-white outline-0 pr-8 pl-20 py-16 z-0 lg:pl-8 lg:pr-8 mx-auto max-w-6xl;
+  @apply outline-0 pr-8 pl-20 py-16 z-0 lg:pl-8 lg:pr-8 mx-auto max-w-6xl;
 
   .selection {
     @apply inline;
@@ -603,15 +596,6 @@ li[data-type="taskItem"] input {
     }
   }
 }
-
-@import "../public/partials/animations.css";
-@import "../public/partials/blocks.css";
-@import "../public/partials/code.css";
-@import "../public/partials/collab.css";
-@import "../public/partials/lists.css";
-@import "../public/partials/placeholder.css";
-@import "../public/partials/table.css";
-@import "../public/partials/typography.css";
 
 .dark {
     --background: oklch(0.145 0 0);
@@ -693,3 +677,12 @@ li[data-type="taskItem"] input {
     @apply bg-background text-foreground;
     }
 }
+
+@import "../public/partials/animations.css";
+@import "../public/partials/blocks.css";
+@import "../public/partials/code.css";
+@import "../public/partials/collab.css";
+@import "../public/partials/lists.css";
+@import "../public/partials/placeholder.css";
+@import "../public/partials/table.css";
+@import "../public/partials/typography.css";
