@@ -440,7 +440,11 @@ body {
 }
 
 .page-editor .editor-content {
-  max-width: 100%;
+  max-width: 70vw;
+  width: 100%;
+  box-sizing: border-box;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
   box-sizing: border-box;
 }
 
