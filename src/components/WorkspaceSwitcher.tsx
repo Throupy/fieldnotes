@@ -1,18 +1,20 @@
-import React from "react";
-import { useAuth } from "../contexts/AuthContext";
-import { FaChevronDown, FaGears, FaUserPlus, FaPenToSquare, FaPen, FaPlus } from "react-icons/fa6";
-import { Popover, PopoverContent, PopoverTrigger } from "../components/ui/popover";
-import { usePages } from "../contexts/PageContext";
+import React, { useState } from 'react';
+import { useAuth } from '../contexts/AuthContext';
+import { usePages } from '../contexts/PageContext';
+import { FaChevronDown, FaGears, FaUserPlus, FaPenToSquare } from 'react-icons/fa6';
+import { Popover, PopoverContent, PopoverTrigger } from '../components/ui/popover';
+import CreateWorkspaceModal from './CreateWorkspaceModal'; // Import the new Modal component
 
 const WorkspaceSwitcher: React.FC = () => {
-  const { addPage, setSelectedPageId } = usePages();
-  const { workspaceIds, currentWorkspaceId, setCurrentWorkspaceId } = useAuth();
+  const { addPage } = usePages();
+  const { workspaces, currentWorkspace, setCurrentWorkspace, createWorkspace } = useAuth();
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const workspaceIdToDisplayName = (workspaceId: string): string => {
-    const nameParts = workspaceId.split("_").slice(2);
-    return nameParts
-      .map((part) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
-      .join(" ");
+  const handleCreateWorkspace = async (name: string) => {
+    const success = await createWorkspace(name);
+    if (success) {
+      setIsModalOpen(false);
+    }
   };
 
   return (
@@ -20,114 +22,95 @@ const WorkspaceSwitcher: React.FC = () => {
       <Popover>
         <PopoverTrigger asChild>
           <button className="flex items-center space-x-2 transition-all">
-          <span className="text-md">📔</span>
+            <span className="text-md">📔</span>
             <span className="text-md font-medium">
-              {currentWorkspaceId ? workspaceIdToDisplayName(currentWorkspaceId) : "Select Workspace"}
+              {currentWorkspace ? currentWorkspace.name : 'Select Workspace'}
             </span>
             <FaChevronDown className="cursor-pointer text-sm" />
           </button>
         </PopoverTrigger>
 
-        <PopoverContent
-          className="workspace-switcher w-68 ml-2 p-0 border rounded-lg shadow-lg bg-[var(--sidebar-bg)] border-[var(--sidebar-border)]"
-        >
-
-      <div className="flex items-center justify-between px-2 py-1 rounded-md">
-        <div className="flex items-center">
-          <div className="w-6 h-6 rounded-sm mr-2 flex items-center justify-center">
-            <span className="text-3xl">📔</span>
+        <PopoverContent className="workspace-switcher w-68 ml-2 p-0 border rounded-lg shadow-lg bg-[var(--sidebar-bg)] border-[var(--sidebar-border)]">
+          <div className="flex items-center justify-between px-2 py-1 rounded-md">
+            <div className="flex items-center">
+              <div className="w-6 h-6 rounded-sm mr-2 flex items-center justify-center">
+                <span className="text-3xl">📔</span>
+              </div>
+              <div className="ml-1 flex flex-col">
+                <span className="text-sm font-medium">
+                  {currentWorkspace ? currentWorkspace.name : 'Unknown Workspace'}
+                </span>
+                <span className="text-xs">Free Plan • 1 member</span>
+              </div>
+            </div>
           </div>
-          <div className="ml-1 flex flex-col">
-            <span className="text-sm font-medium">
-              {currentWorkspaceId ? workspaceIdToDisplayName(currentWorkspaceId) : "Unkown Workspace"}
-            </span>
-            <span className="text-xs">Free Plan • 1 member</span>
+          <div className="mb-2 flex items-center justify-between px-2 py-1 rounded-md">
+            <div className="flex items-center space-x-2">
+              <button className="hover:bg-[var(--active-item)] rounded-md py-1 px-2 transition-all flex items-center space-x-1 border border-[var(--sidebar-border)]">
+                <FaGears className="w-4 h-4" />
+                <span className="text-xs">Settings</span>
+              </button>
+              <button className="hover:bg-[var(--active-item)] rounded-md py-1 px-2 transition-all flex items-center space-x-1 border border-[var(--sidebar-border)]">
+                <FaUserPlus className="w-4 h-4" />
+                <span className="text-xs">Invite</span>
+              </button>
+            </div>
           </div>
-        </div>
-      </div>
-      <div className="mb-2 flex items-center justify-between px-2 py-1 rounded-md">
-        <div className="flex items-center space-x-2">
-          <button className="hover:bg-[var(--active-item)] rounded-md py-1 px-2 transition-all flex items-center space-x-1 border border-[var(--sidebar-border)]">
-        <FaGears className="w-4 h-4" />
-        <span className="text-xs">Settings</span>
-          </button>
-          <button className="hover:bg-[var(--active-item)] rounded-md py-1 px-2 transition-all flex items-center space-x-1 border border-[var(--sidebar-border)]">
-        <FaUserPlus className="w-4 h-4" />
-        <span className="text-xs">Invite</span>
-          </button>
-        </div>
-      </div>
-      <div className="sidebar-divider"></div>
-          {workspaceIds.length === 0 ? (
+          <div className="sidebar-divider"></div>
+          {workspaces.length === 0 ? (
             <p className="text-center">No workspaces found</p>
           ) : (
             <ul className="space-y-1">
-              {workspaceIds.map((workspaceId) => (
+              {workspaces.map((workspace) => (
                 <li
-                  key={workspaceId}
-                  onClick={() => setCurrentWorkspaceId(workspaceId)}
+                  key={workspace.id}
+                  onClick={() => setCurrentWorkspace(workspace)}
                   className={`text-sm m-1 p-1 rounded-md cursor-pointer text-[var(--muted-text)] hover:text-[var(--text-color)] hover:bg-[var(--active-item)] transition-all ${
-                    workspaceId === currentWorkspaceId ? "bg-[var(--active-item)]" : ""
+                    workspace.id === currentWorkspace?.id ? 'bg-[var(--active-item)]' : ''
                   }`}
                 >
-                  <span className="mr-1 inline-flex items-center align-middle">📔 {workspaceIdToDisplayName(workspaceId)}</span>
+                  <span className="mr-1 inline-flex items-center align-middle">
+                    📔 {workspace.name}
+                  </span>
                 </li>
               ))}
-            {/* Placeholder workspaces */}
-            <li
-              key="placeholder-workspace"
-              className="text-sm m-1 p-1 rounded-md cursor-pointer text-[var(--muted-text)] hover:text-[var(--text-color)] hover:bg-[var(--active-item)] transition-all"
-            >
-                <span className="mr-1 inline-flex items-center align-middle">💼 Work</span>
-            </li>
-            <li
-              key="placeholder-workspace"
-              className="text-sm m-1 p-1 rounded-md cursor-pointer text-[var(--muted-text)] hover:text-[var(--text-color)] hover:bg-[var(--active-item)] transition-all"
-            >
-              <span className="mr-1 inline-flex items-center align-middle">💸 Finances</span>
-            </li>
             </ul>
           )}
-
           <div className="sidebar-divider"></div>
-
           <div className="text-sm rounded-lg shadow-lg">
             <ul className="flex flex-col">
               <li>
                 <button
+                  onClick={() => setIsModalOpen(true)} 
                   className="rounded-md w-full text-left px-2 py-2 text-sm hover:bg-[var(--active-item)] hover:text-white transition-all"
                 >
-                  Create work account
+                  Create Workspace
                 </button>
               </li>
               <li>
-                <button
-                  className="rounded-md w-full text-left px-2 py-2 text-sm hover:bg-[var(--active-item)] hover:text-white transition-all"
-                >
+                <button className="rounded-md w-full text-left px-2 py-2 text-sm hover:bg-[var(--active-item)] hover:text-white transition-all">
                   Add another account
                 </button>
               </li>
               <li>
-                <button
-                  className="rounded-md text-red-500 w-full text-left px-2 py-2 text-sm hover:bg-[var(--active-item)] hover:text-red-600 transition-all"
-                >
+                <button className="rounded-md text-red-500 w-full text-left px-2 py-2 text-sm hover:bg-[var(--active-item)] hover:text-red-600 transition-all">
                   Log out
                 </button>
               </li>
             </ul>
           </div>
-
         </PopoverContent>
       </Popover>
 
-      {/* Edit Button */}
-      <button className=" transition-all">
-        <FaPenToSquare
-          className="w-4 h-4 cursor-pointer"
-          onClick={() => addPage('Untitled Page', null)}
-        />
-
+      <button className="transition-all">
+        <FaPenToSquare className="w-4 h-4 cursor-pointer" onClick={() => addPage('Untitled Page', null)} />
       </button>
+
+      <CreateWorkspaceModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSubmit={handleCreateWorkspace}
+      />
     </div>
   );
 };

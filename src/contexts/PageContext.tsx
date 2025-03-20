@@ -24,7 +24,7 @@ interface PageContextType {
 const PageContext = createContext<PageContextType | undefined>(undefined);
 
 export const PageProvider = ({ children }: { children: ReactNode }) => {
-  const { currentWorkspaceId } = useAuth();
+  const { currentWorkspace } = useAuth();
   const [pages, setPages] = useState<Page[]>([]);
   const [selectedPageId, setSelectedPageId] = useState<string | null>(null);
   const [lastWorkspaceId, setLastWorkspaceId] = useState<string | null>(null);
@@ -34,14 +34,14 @@ export const PageProvider = ({ children }: { children: ReactNode }) => {
     setPages(updatedPages);
   }, []);
 
-  // set up the workspace and fetch pages when the currentWorkspaceId changes
+  // set up the workspace and fetch pages when the currentWorkspace changes
   useEffect(() => {
-    if (currentWorkspaceId && currentWorkspaceId !== lastWorkspaceId) {
-        setWorkspace(currentWorkspaceId);
-        setLastWorkspaceId(currentWorkspaceId);
-        fetchPages();
+    if (currentWorkspace && currentWorkspace.id !== lastWorkspaceId) {
+      setWorkspace(currentWorkspace.id);
+      setLastWorkspaceId(currentWorkspace.id);
+      fetchPages();
     }
-  }, [currentWorkspaceId, fetchPages]);
+  }, [currentWorkspace, fetchPages]);;
 
   // updates a single page in app context and local DB (synced to remote)
   const updatePageInContext = useCallback(async (pageId: string, updates: Partial<Page>) => {
