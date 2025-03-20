@@ -137,7 +137,7 @@ const Sidebar = ({ onSettingsClick }: { onSettingsClick: () => void }) => {
       style={{ width: `${sidebarWidth}px` }}
     >
       <div className='sidebar'>
-        <div className="sidebar-buttons-section">
+        <div className="text-md sidebar-buttons-section">
           <WorkspaceSwitcher />
           <div className="sidebar-button">
             <FaSearch className="sidebar-icon" />
@@ -155,9 +155,9 @@ const Sidebar = ({ onSettingsClick }: { onSettingsClick: () => void }) => {
         <div className="sidebar-divider"></div>
 
         <div className='sidebar-header'>
-          <span className='text-md'>Workspace Pages ({pages.length})</span>
+          <span className='text-sm'>Workspace Pages ({pages.length})</span>
           <FaPlus
-            className='plus-icon text-md'
+            className='plus-icon'
             onClick={() => addPage('Untitled Page', null)}
           />
         </div>

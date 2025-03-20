@@ -20,8 +20,8 @@ const WorkspaceSwitcher: React.FC = () => {
       <Popover>
         <PopoverTrigger asChild>
           <button className="flex items-center space-x-2 transition-all">
-          <span>📔</span>
-            <span className="font-medium">
+          <span className="text-md">📔</span>
+            <span className="text-md font-medium">
               {currentWorkspaceId ? workspaceIdToDisplayName(currentWorkspaceId) : "Select Workspace"}
             </span>
             <FaChevronDown className="cursor-pointer text-sm" />
@@ -53,7 +53,7 @@ const WorkspaceSwitcher: React.FC = () => {
           </button>
           <button className="hover:bg-[var(--active-item)] rounded-md py-1 px-2 transition-all flex items-center space-x-1 border border-[var(--sidebar-border)]">
         <FaUserPlus className="w-4 h-4" />
-        <span className="text-xs">Invite Members</span>
+        <span className="text-xs">Invite</span>
           </button>
         </div>
       </div>
@@ -70,7 +70,7 @@ const WorkspaceSwitcher: React.FC = () => {
                     workspaceId === currentWorkspaceId ? "bg-[var(--active-item)]" : ""
                   }`}
                 >
-                  <span className="mr-1 text-md inline-flex items-center align-middle">📔 {workspaceIdToDisplayName(workspaceId)}</span>
+                  <span className="mr-1 inline-flex items-center align-middle">📔 {workspaceIdToDisplayName(workspaceId)}</span>
                 </li>
               ))}
             {/* Placeholder workspaces */}
@@ -78,13 +78,13 @@ const WorkspaceSwitcher: React.FC = () => {
               key="placeholder-workspace"
               className="text-sm m-1 p-1 rounded-md cursor-pointer text-[var(--muted-text)] hover:text-[var(--text-color)] hover:bg-[var(--active-item)] transition-all"
             >
-                <span className="mr-1 text-md inline-flex items-center align-middle">💼 Work</span>
+                <span className="mr-1 inline-flex items-center align-middle">💼 Work</span>
             </li>
             <li
               key="placeholder-workspace"
               className="text-sm m-1 p-1 rounded-md cursor-pointer text-[var(--muted-text)] hover:text-[var(--text-color)] hover:bg-[var(--active-item)] transition-all"
             >
-              <span className="mr-1 text-md inline-flex items-center align-middle">💸 Finances</span>
+              <span className="mr-1 inline-flex items-center align-middle">💸 Finances</span>
             </li>
             </ul>
           )}
