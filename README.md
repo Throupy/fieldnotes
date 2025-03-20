@@ -17,7 +17,7 @@
 - [ ] Upon sync, need to refresh pages in context
 - [ ] Upload backend code to GH
 - [ ] Collaborative 'live updates' i.e. you don't have to switch pages to see updated. Allocate about 3 years to do this - expecting issues!!
-- [ ] Should workspace state be in Authcontext? probably not.
+- [X] Should workspace state be in Authcontext? probably not.
 - [X] Style workspace switcher better
 - [ ] Title update causes couchDB sync with every char entered
 - [ ] Context menu improvements - text wrapping and maybe use shadcn popover?
