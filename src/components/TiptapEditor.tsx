@@ -25,7 +25,13 @@ const TiptapEditor = ({ content, onUpdate }) => {
     autofocus: true,
     extensions: [
       StarterKit,
-      CodeBlockLowlight.configure({ lowlight: createLowlight(common) }),
+      CodeBlockLowlight.configure({ 
+        lowlight: createLowlight(common),
+        exitOnArrowDown: true, 
+        HTMLAttributes: {
+          spellcheck: "false",
+        }
+      }),
       Placeholder.configure({ placeholder: "Start writing..." }),
       TaskList,
       TaskItem,
