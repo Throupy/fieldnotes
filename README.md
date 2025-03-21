@@ -6,7 +6,7 @@
 - [X] Personal workspaces
 - [ ] Shared workspaces
 - [ ] Ability to upload images
-- [ ] Delete pages leaves orphans - implement cascade deleting
+- [X] Delete pages leaves orphans - implement cascade deleting
 - [X] New font
 - [ ] Ability to change font in settings
 - [ ] Fix animation - editor animation only runs on the first page selected

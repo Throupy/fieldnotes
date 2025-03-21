@@ -57,7 +57,17 @@ const Sidebar = ({ onSettingsClick }: { onSettingsClick: () => void }) => {
   };
 
   const handleDeletePage = async (pageId: string) => {
-    deletePageInContext(pageId);
+    // recurse function for casade delete
+    const recursiveDelete = (id: string) => {
+      const children = pages.filter((page) => page.parent === id);
+      // each child after its parent (sub-children)
+      for (const child of children) {
+        recursiveDelete(child._id);
+      }
+      deletePageInContext(id);
+    };
+
+    recursiveDelete(pageId);
     setContextMenu(null);
   };
 
