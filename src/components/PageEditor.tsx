@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, useMemo } from "react";
+import { useEffect, useState, useCallback, useMemo, useRef } from "react";
 import { usePages } from "../contexts/PageContext";
 import TitleEditor from "../components/TitleEditor";
 import TiptapEditor from "../components/TiptapEditor";
@@ -19,6 +19,7 @@ const PageEditor = () => {
     editorKey: ""
   });
   const [showEditor, setShowEditor] = useState(true);
+  const lastPageIdRef = useRef<string | null>(null);
   
   // find the page once to prevent unnecessary re-renders
   const page = useMemo(
@@ -26,28 +27,34 @@ const PageEditor = () => {
     [pages, selectedPageId],
   );
 
-  // Handle page changes with animation
   useEffect(() => {
     if (selectedPageId && page) {
-      // Hide current editor
-      setShowEditor(false);
-      
-      // Wait for fade-out animation (adjust time as needed)
-      setTimeout(() => {
-        // Update editor state with new page content
+      // If the page ID changed (not just the page content), play animation
+      if (lastPageIdRef.current !== selectedPageId) {
+        lastPageIdRef.current = selectedPageId;
+        
+        setShowEditor(false);
+        
+        setTimeout(() => {
+          setEditorState({
+            title: page.title || "",
+            initialContent: page.content || "",
+            editorKey: page._id
+          });
+          
+          setShowEditor(true);
+        }, 200);
+      } else {
+        // If just the page content changed, update without animation
         setEditorState({
           title: page.title || "",
           initialContent: page.content || "",
           editorKey: page._id
         });
-        
-        // Show editor again (triggers fade-in animation)
-        setShowEditor(true);
-      }, 200); // Animation duration
+      }
     }
   }, [selectedPageId, page]);
 
-  // Rest of your component logic remains the same
   const debouncedUpdateContent = useCallback(
     debounce((pageId: string, content: string) => {
       updatePageInContext(pageId, { content });

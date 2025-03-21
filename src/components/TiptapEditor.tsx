@@ -61,6 +61,7 @@ const TiptapEditor = ({ content, onUpdate, key }: TiptapEditorProps) => {
         onDrop: (editor, files) => handleFiles(files, editor),
         onPaste: (editor, files) => handleFiles(files, editor)
       }),
+      ImageResize,
     ],
     content: content || "",
     onUpdate: ({ editor }) => {
