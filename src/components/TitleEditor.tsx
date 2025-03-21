@@ -1,9 +1,9 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, memo } from "react";
 import Picker from "@emoji-mart/react";
 import data from "@emoji-mart/data";
 import { usePages } from "../contexts/PageContext";
 
-const TitleEditor = ({ title, onChange, pageId }) => {
+const TitleEditor = ({ title, onUpdate, pageId }) => {
   const { pages, updatePageInContext } = usePages();
   const [icon, setIcon] = useState("📄");
   const [showPicker, setShowPicker] = useState(false);
@@ -12,17 +12,15 @@ const TitleEditor = ({ title, onChange, pageId }) => {
   useEffect(() => {
     if (pageId) {
       const page = pages.find((p) => p._id === pageId);
-      console.log(`Loading icon for page ${pageId}: ${page?.icon || "📄"}`);
-      setIcon(page?.icon || "📄");
+      if (page?.icon) {
+        setIcon(page.icon);
+      }
     }
   }, [pageId, pages]);
 
-  const handleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newTitle = e.target.value;
-    onChange(newTitle);
-    if (pageId) {
-      await updatePageInContext(pageId, { title: newTitle });
-    }
+    onUpdate(newTitle);
   };
 
   const handleEmojiSelect = async (emoji) => {

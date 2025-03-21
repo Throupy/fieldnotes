@@ -1,5 +1,6 @@
-import { useEffect } from "react";
+import { useEffect, memo } from "react";
 import { EditorContent, useEditor } from "@tiptap/react";
+import { ReactNode } from "react";
 import { common, createLowlight } from "lowlight";
 import StarterKit from "@tiptap/starter-kit";
 import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
@@ -20,11 +21,19 @@ import OrderedList from "@tiptap/extension-ordered-list";
 import Heading from "@tiptap/extension-heading";
 import HardBreak from "@tiptap/extension-hard-break";
 
-const TiptapEditor = ({ content, onUpdate }) => {
+interface TiptapEditorProps {
+  content: string;
+  onUpdate: (content: string) => void;
+  key?: string | number;
+}
+
+const TiptapEditor = ({ content, onUpdate, key }: TiptapEditorProps) => {
   const editor = useEditor({
     autofocus: true,
     extensions: [
-      StarterKit,
+      StarterKit.configure({
+        codeBlock: false,
+      }),
       CodeBlockLowlight.configure({ 
         lowlight: createLowlight(common),
         exitOnArrowDown: true, 
@@ -37,22 +46,16 @@ const TiptapEditor = ({ content, onUpdate }) => {
       TaskItem,
       Link,
       Highlight,
-      Blockquote,
       Image,
       Table.configure({ resizable: true }),
       TableRow,
       TableCell,
       TableHeader,
       Underline,
-      BulletList,
-      OrderedList,
-      Heading.configure({ levels: [1, 2, 3] }),
-      HardBreak,
     ],
     content: content || "",
     onUpdate: ({ editor }) => {
       const newContent = editor.getHTML();
-      console.log(`Editor updated: ${newContent}`);
       onUpdate(newContent);
     },
     shouldRerenderOnTransaction: false,
@@ -60,7 +63,12 @@ const TiptapEditor = ({ content, onUpdate }) => {
 
   useEffect(() => {
     console.count("TiptapEditor render");
-  });
+    console.log("TiptapEditor render caused by:", {
+      content: content,
+      editor: editor ? "exists" : "null",
+      keyProp: key
+    });
+  }, [content, editor, key]);
 
   useEffect(() => {
     if (editor && content !== editor.getHTML()) {
