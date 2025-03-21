@@ -12,14 +12,14 @@ const PageEditor = () => {
   const page = pages.find((p) => p._id === selectedPageId) || null;
 
   const debouncedUpdate = useCallback(
-    debounce((pageId, content) => {
+    debounce((pageId: string, content: string) => {
       console.log(`Debounced save for page ${pageId}: ${content}`);
       updatePageInContext(pageId, { content });
     }, 500),
     [updatePageInContext]
   );
 
-  const handleContentUpdate = (newContent) => {
+  const handleContentUpdate = (newContent: string) => {
     if (page) {
       debouncedUpdate(page._id, newContent);
     }
@@ -35,8 +35,9 @@ const PageEditor = () => {
     }
   }, [selectedPageId]);
 
+  {/* add a key param to parent div so react knows to re-render the component when the page changes */}
   return page ? (
-    <div className="page-editor active">
+    <div className="page-editor active" key={page._id}>
       <TitleEditor
         title={title}
         onChange={setTitle}
