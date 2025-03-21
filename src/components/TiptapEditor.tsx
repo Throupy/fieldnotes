@@ -1,4 +1,4 @@
-import { useEffect, memo } from "react";
+import { useEffect, memo, useCallback } from "react";
 import { EditorContent, useEditor } from "@tiptap/react";
 import { ReactNode } from "react";
 import { common, createLowlight } from "lowlight";
@@ -20,6 +20,7 @@ import BulletList from "@tiptap/extension-bullet-list";
 import OrderedList from "@tiptap/extension-ordered-list";
 import Heading from "@tiptap/extension-heading";
 import HardBreak from "@tiptap/extension-hard-break";
+import FileHandler from "@tiptap-pro/extension-file-handler";
 
 interface TiptapEditorProps {
   content: string;
@@ -46,12 +47,20 @@ const TiptapEditor = ({ content, onUpdate, key }: TiptapEditorProps) => {
       TaskItem,
       Link,
       Highlight,
-      Image,
+      Image.configure({
+        inline: true,
+        allowBase64: true,
+      }),
       Table.configure({ resizable: true }),
       TableRow,
       TableCell,
       TableHeader,
       Underline,
+      FileHandler.configure({
+        allowedMimeTypes: ["image/*"],
+        onDrop: (editor, files) => handleFiles(files, editor),
+        onPaste: (editor, files) => handleFiles(files, editor)
+      }),
     ],
     content: content || "",
     onUpdate: ({ editor }) => {
@@ -60,6 +69,21 @@ const TiptapEditor = ({ content, onUpdate, key }: TiptapEditorProps) => {
     },
     shouldRerenderOnTransaction: false,
   });
+
+  const handleFiles = useCallback(
+    (files: File[], editor: any) => {
+      files.forEach((file) => {
+        if (!file.type.startsWith("image/")) return; // non-image skip
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const base64 = e.target?.result as string;
+          editor.chain().focus().setImage({ src: base64 }).run();
+        };
+        reader.readAsDataURL(file); // Convert to base64 for immediate display
+      });
+    },
+    []
+  );
 
   useEffect(() => {
     console.count("TiptapEditor render");

@@ -31,8 +31,8 @@ export const getPage = async (id: string) => {
 
 export const updatePage = async (pageId: string, updates: Partial<{ title: string; content: string; icon: string }>) => {
   const pagesDB = getPagesDB();
-
   const page = await pagesDB.get(pageId);
+
   const updatedPage = { ...page, ...updates, updatedAt: Date.now() };
   await pagesDB.put(updatedPage);
   return updatedPage;
