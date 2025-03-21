@@ -1,6 +1,5 @@
-import { useEffect, memo, useCallback } from "react";
+import { useEffect, memo, useCallback, useRef } from "react";
 import { EditorContent, useEditor } from "@tiptap/react";
-import { ReactNode } from "react";
 import { common, createLowlight } from "lowlight";
 import StarterKit from "@tiptap/starter-kit";
 import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
@@ -9,45 +8,37 @@ import TaskList from "@tiptap/extension-task-list";
 import TaskItem from "@tiptap/extension-task-item";
 import Link from "@tiptap/extension-link";
 import Highlight from "@tiptap/extension-highlight";
-import Blockquote from "@tiptap/extension-blockquote";
-import Image from "@tiptap/extension-image";
 import Table from "@tiptap/extension-table";
 import TableRow from "@tiptap/extension-table-row";
 import TableCell from "@tiptap/extension-table-cell";
 import TableHeader from "@tiptap/extension-table-header";
 import Underline from "@tiptap/extension-underline";
-import BulletList from "@tiptap/extension-bullet-list";
-import OrderedList from "@tiptap/extension-ordered-list";
-import Heading from "@tiptap/extension-heading";
-import HardBreak from "@tiptap/extension-hard-break";
 import FileHandler from "@tiptap-pro/extension-file-handler";
+import { ImageBlock } from "../extensions/ImageBlock";
+import ImageBlockMenu from "../components/ImageBlockMenu";
 
 interface TiptapEditorProps {
   content: string;
   onUpdate: (content: string) => void;
-  key?: string | number;
 }
 
-const TiptapEditor = ({ content, onUpdate, key }: TiptapEditorProps) => {
+const TiptapEditor = ({ content, onUpdate }: TiptapEditorProps) => {
+  const menuContainerRef = useRef<HTMLDivElement>(null);
   const editor = useEditor({
     autofocus: true,
     extensions: [
-      StarterKit.configure({
-        codeBlock: false,
-      }),
-      CodeBlockLowlight.configure({ 
+      StarterKit.configure({ codeBlock: false }),
+      CodeBlockLowlight.configure({
         lowlight: createLowlight(common),
-        exitOnArrowDown: true, 
-        HTMLAttributes: {
-          spellcheck: "false",
-        }
+        exitOnArrowDown: true,
+        HTMLAttributes: { spellcheck: "false" },
       }),
       Placeholder.configure({ placeholder: "Start writing..." }),
       TaskList,
       TaskItem,
       Link,
       Highlight,
-      Image.configure({
+      ImageBlock.configure({
         inline: true,
         allowBase64: true,
       }),
@@ -59,7 +50,7 @@ const TiptapEditor = ({ content, onUpdate, key }: TiptapEditorProps) => {
       FileHandler.configure({
         allowedMimeTypes: ["image/*"],
         onDrop: (editor, files) => handleFiles(files, editor),
-        onPaste: (editor, files) => handleFiles(files, editor)
+        onPaste: (editor, files) => handleFiles(files, editor),
       }),
     ],
     content: content || "",
@@ -73,13 +64,17 @@ const TiptapEditor = ({ content, onUpdate, key }: TiptapEditorProps) => {
   const handleFiles = useCallback(
     (files: File[], editor: any) => {
       files.forEach((file) => {
-        if (!file.type.startsWith("image/")) return; // non-image skip
+        if (!file.type.startsWith("image/")) return;
         const reader = new FileReader();
         reader.onload = (e) => {
           const base64 = e.target?.result as string;
-          editor.chain().focus().setImage({ src: base64 }).run();
+          editor
+            .chain()
+            .focus()
+            .setImageBlock({ src: base64, width: "100", align: "center" })
+            .run();
         };
-        reader.readAsDataURL(file); // Convert to base64 for immediate display
+        reader.readAsDataURL(file);
       });
     },
     []
@@ -88,11 +83,10 @@ const TiptapEditor = ({ content, onUpdate, key }: TiptapEditorProps) => {
   useEffect(() => {
     console.count("TiptapEditor render");
     console.log("TiptapEditor render caused by:", {
-      content: content,
+      content,
       editor: editor ? "exists" : "null",
-      keyProp: key
     });
-  }, [content, editor, key]);
+  }, [content, editor]);
 
   useEffect(() => {
     if (editor && content !== editor.getHTML()) {
@@ -100,7 +94,12 @@ const TiptapEditor = ({ content, onUpdate, key }: TiptapEditorProps) => {
     }
   }, [editor, content]);
 
-  return <EditorContent editor={editor} className="editor-content" />;
+  return (
+    <div ref={menuContainerRef}>
+      <EditorContent editor={editor} className="editor-content" />
+      {editor && <ImageBlockMenu editor={editor} appendTo={menuContainerRef} />}
+    </div>
+  );
 };
 
-export default TiptapEditor;
+export default memo(TiptapEditor);

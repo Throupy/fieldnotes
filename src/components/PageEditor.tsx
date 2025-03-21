@@ -102,7 +102,6 @@ const PageEditor = () => {
             pageId={page._id}
           />
           <TiptapEditor
-            key={editorState.editorKey}
             content={editorState.initialContent}
             onUpdate={handleContentUpdate}
           />

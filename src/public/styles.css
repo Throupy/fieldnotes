@@ -449,8 +449,22 @@ body {
   box-sizing: border-box;
 }
 
-.page-editor.active {
-  animation: fadeInUp 0.3s ease-in;
+.editor-content img {
+    height: auto;
+    max-width: none;
+    display: block; 
+  }
+
+.editor-content img[data-align="left"] {
+    margin: 0;
+}
+
+.editor-content img[data-align="center"] {
+    margin: 0 auto;
+}
+
+.editor-content img[data-align="right"] {
+    margin: 0 0 0 auto;
 }
 
 @keyframes fadeInUp {
