@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, useMemo, memo } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { usePages } from "../contexts/PageContext";
 import TitleEditor from "../components/TitleEditor";
 import TiptapEditor from "../components/TiptapEditor";
@@ -18,13 +18,36 @@ const PageEditor = () => {
     initialContent: "",
     editorKey: ""
   });
-
+  const [showEditor, setShowEditor] = useState(true);
+  
   // find the page once to prevent unnecessary re-renders
   const page = useMemo(
     () => pages.find((p) => p._id === selectedPageId) || null,
     [pages, selectedPageId],
   );
 
+  // Handle page changes with animation
+  useEffect(() => {
+    if (selectedPageId && page) {
+      // Hide current editor
+      setShowEditor(false);
+      
+      // Wait for fade-out animation (adjust time as needed)
+      setTimeout(() => {
+        // Update editor state with new page content
+        setEditorState({
+          title: page.title || "",
+          initialContent: page.content || "",
+          editorKey: page._id
+        });
+        
+        // Show editor again (triggers fade-in animation)
+        setShowEditor(true);
+      }, 200); // Animation duration
+    }
+  }, [selectedPageId, page]);
+
+  // Rest of your component logic remains the same
   const debouncedUpdateContent = useCallback(
     debounce((pageId: string, content: string) => {
       updatePageInContext(pageId, { content });
@@ -58,32 +81,26 @@ const PageEditor = () => {
     [page, debouncedUpdateTitle],
   );
 
-  useEffect(() => {
-    if (selectedPageId && page) {
-      setEditorState({
-        title: page.title || "",
-        initialContent: page.content || "",
-        editorKey: page._id
-      });
-    }
-  }, [selectedPageId, page]);
-
   if (!page) {
     return <p className="p-6">Select a page...</p>;
   }
 
   return (
-    <div className="page-editor active">
-      <TitleEditor
-        title={editorState.title}
-        onUpdate={handleTitleUpdate}
-        pageId={page._id}
-      />
-      <TiptapEditor
-        key={editorState.editorKey}
-        content={editorState.initialContent}
-        onUpdate={handleContentUpdate}
-      />
+    <div className={`page-editor ${showEditor ? 'active' : ''}`}>
+      {showEditor && (
+        <>
+          <TitleEditor
+            title={editorState.title}
+            onUpdate={handleTitleUpdate}
+            pageId={page._id}
+          />
+          <TiptapEditor
+            key={editorState.editorKey}
+            content={editorState.initialContent}
+            onUpdate={handleContentUpdate}
+          />
+        </>
+      )}
     </div>
   );
 };
