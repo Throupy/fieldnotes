@@ -1,64 +1,64 @@
-import { useState, useRef, useEffect, memo } from "react";
-import Picker from "@emoji-mart/react";
-import data from "@emoji-mart/data";
+import { useState } from "react";
+import EmojiPicker, { Theme } from "emoji-picker-react";
 import { usePages } from "../contexts/PageContext";
 
-const TitleEditor = ({ title, onUpdate, pageId }) => {
-  const { pages, updatePageInContext } = usePages();
-  const [icon, setIcon] = useState("📄");
-  const [showPicker, setShowPicker] = useState(false);
-  const pickerRef = useRef<HTMLDivElement | null>(null);
+const TitleEditor = ({
+  title,
+  onUpdate,
+  pageId,
+}: {
+  title: string;
+  onUpdate: (title: string) => void;
+  pageId: string;
+}) => {
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const { updatePageInContext, pages } = usePages();
+  const page = pages.find((p) => p._id === pageId);
 
-  useEffect(() => {
-    if (pageId) {
-      const page = pages.find((p) => p._id === pageId);
-      if (page?.icon) {
-        setIcon(page.icon);
-      }
-    }
-  }, [pageId, pages]);
+  interface EmojiClickData {
+    emoji: string;
+    [key: string]: any;
+  }
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newTitle = e.target.value;
-    onUpdate(newTitle);
-  };
-
-  const handleEmojiSelect = async (emoji) => {
-    const newIcon = emoji.native;
-    setIcon(newIcon);
-    setShowPicker(false);
-    if (pageId) {
-      await updatePageInContext(pageId, { icon: newIcon });
+  const handleEmojiClick = (emoji: EmojiClickData) => {
+    if (page) {
+      updatePageInContext(pageId, { icon: emoji.emoji });
+      setShowEmojiPicker(false);
     }
   };
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (pickerRef.current && !pickerRef.current.contains(event.target as Node)) {
-        setShowPicker(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
 
   return (
-    <div className="title-editor">
-      <span className="title-icon" onClick={() => setShowPicker(!showPicker)}>
-        {icon}
-      </span>
+    <div className="relative flex items-center mb-2.5 text-3xl">
+      <div
+        className="mr-2.5 cursor-pointer p-1.5 text-3xl"
+        onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+      >
+        {page?.icon || "📄"}
+      </div>
       <input
         type="text"
-        className="title-input"
         value={title}
-        onChange={handleChange}
+        onChange={(e) => onUpdate(e.target.value)}
         placeholder="Untitled"
+        className="flex-grow font-bold bg-transparent text-white border-none outline-none p-3 border-b border-stone-600"
       />
-      {showPicker && (
-        <div ref={pickerRef} className={`emoji-picker ${showPicker ? "active" : ""}`}>
-          <Picker data={data} onEmojiSelect={handleEmojiSelect} />
-        </div>
-      )}
+
+      <div
+        className={`absolute top-full left-0 z-[1000] ${
+          showEmojiPicker
+            ? "animate-in zoom-in-95 duration-200"
+            : "animate-out zoom-out-95 duration-200 opacity-0"
+        }`}
+      >
+        {showEmojiPicker && (
+          <EmojiPicker
+            theme={Theme.DARK}
+            className="fieldnotes-emoji-picker"
+            onEmojiClick={handleEmojiClick}
+            lazyLoadEmojis={true}
+          />
+        )}
+      </div>
     </div>
   );
 };

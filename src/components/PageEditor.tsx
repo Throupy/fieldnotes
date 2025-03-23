@@ -93,7 +93,13 @@ const PageEditor = () => {
   }
 
   return (
-    <div className={`page-editor ${showEditor ? 'active' : ''}`}>
+    <div
+      className={`flex-grow h-full overflow-y-auto p-6 ${
+        showEditor
+          ? 'animate-in fade-in slide-in-from-bottom-5 duration-300'
+          : 'opacity-0'
+      }`}
+    >
       {showEditor && (
         <>
           <TitleEditor

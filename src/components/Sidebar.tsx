@@ -89,52 +89,58 @@ const Sidebar = ({ onSettingsClick }: { onSettingsClick: () => void }) => {
       .filter((page) => page.parent === parentId)
       .map((page) => {
         const isExpanded = expanded[page._id];
+        const hasChildren = pages.some((child) => child.parent === page._id);
   
         return (
-          <div key={page._id} className="sidebar-page">
+          <div key={page._id} className="animate-in duration-200 ease-in">
             <div
-              className="sidebar-page-item"
+              className="relative flex items-center gap-2 w-full py-1.5 px-0 rounded-md cursor-pointer transition-colors hover:bg-stone-800 group"
               onClick={() => setSelectedPageId(page._id)}
               onContextMenu={(e) => handleRightClick(e, page._id)}
               style={{ paddingLeft: `${depth * 16}px` }}
             >
-              {pages.some((child) => child.parent === page._id) ? (
-                <span
-                  className="page-toggle"
-                  onClick={(e) => {
+              <span
+                className="w-5 flex items-center justify-center relative"
+                onClick={(e) => {
+                  if (hasChildren) {
                     e.stopPropagation();
                     setExpanded((prev) => ({
                       ...prev,
                       [page._id]: !prev[page._id],
                     }));
-                  }}
-                >
-                  <FaChevronRight
-                    className={`sidebar-expand-arrow ${
-                      isExpanded ? "collapsed" : "expanded"
-                    }`}
-                  />
-                  <FaChevronDown
-                    className={`sidebar-expand-arrow ${
-                      isExpanded ? "expanded" : "collapsed"
-                    }`}
-                  />
-                  <span className="page-icon-has-children">{page.icon}</span>
-                </span>
-                
-              ) : (
-                <span className="page-toggle">
-                  <span className="page-icon">{page.icon}</span>
-                </span>
-              )}
-              <span className="sidebar-page-title">{page.title || "Untitled"}</span>
+                  }
+                }}
+              >
+                {hasChildren ? (
+                  <>
+                    <span className="absolute flex items-center justify-center transition-opacity duration-200 opacity-100 group-hover:opacity-0">
+                      {page.icon}
+                    </span>
+                    {isExpanded ? (
+                      <FaChevronDown className="absolute flex items-center justify-center transition-opacity duration-200 opacity-0 group-hover:opacity-100" />
+                    ) : (
+                      <FaChevronRight className="absolute flex items-center justify-center transition-opacity duration-200 opacity-0 group-hover:opacity-100" />
+                    )}
+                  </>
+                ) : (
+                  <span className="flex items-center justify-center">
+                    {page.icon}
+                  </span>
+                )}
+              </span>
+              <span className="whitespace-nowrap overflow-hidden text-ellipsis">
+                {page.title || "Untitled"}
+              </span>
             </div>
-
-            {isExpanded && (
-              <div className={`nested-pages ${isExpanded ? "expanded" : ""}`}>
-                {renderPages(page._id, depth + 1)}
-              </div>
-            )}
+            <div
+              className={`overflow-hidden transition-all duration-300 ease-in-out ${
+                isExpanded
+                  ? "max-h-[1000px] opacity-100 animate-expand"
+                  : "max-h-0 opacity-0 animate-collapse"
+              }`}
+            >
+              {renderPages(page._id, depth + 1)}
+            </div>
           </div>
         );
       });
@@ -143,61 +149,64 @@ const Sidebar = ({ onSettingsClick }: { onSettingsClick: () => void }) => {
   return (
     <div
       ref={sidebarRef}
-      className='sidebar-container'
+      className="relative"
       style={{ width: `${sidebarWidth}px` }}
     >
-      <div className='sidebar'>
-        <div className="text-md sidebar-buttons-section">
+      <div className="relative bg-stone-900 text-stone-400 h-full overflow-y-auto overflow-x-hidden transition-all duration-200 ease border-r border-stone-700">
+        <div className="flex flex-col gap-0.5 p-1 text-sm">
           <WorkspaceSwitcher />
-          <div className="sidebar-button">
-            <FaSearch className="sidebar-icon" />
-            <span className="sidebar-page-title">Search</span>
+          <div className="flex items-center gap-2 py-1.5 px-2 rounded-md cursor-pointer transition-colors hover:bg-stone-800 hover:text-white min-h-8 text-stone-400">
+            <FaSearch className="text-base min-w-5 text-center" />
+            <span className="whitespace-nowrap overflow-hidden text-ellipsis">Search</span>
           </div>
-          <div className="sidebar-button">
-            <FaHome className="sidebar-icon" />
-            <span className="sidebar-page-title">Home</span>
+          <div className="flex items-center gap-2 py-1.5 px-2 rounded-md cursor-pointer transition-colors hover:bg-stone-800 hover:text-white min-h-8 text-stone-400">
+            <FaHome className="text-base min-w-5 text-center" />
+            <span className="whitespace-nowrap overflow-hidden text-ellipsis">Home</span>
           </div>
-          <div className="sidebar-button" onClick={onSettingsClick}>
-            <FaCog className="sidebar-icon" />
-            <span className="sidebar-page-title">Settings</span>
+          <div className="flex items-center gap-2 py-1.5 px-2 rounded-md cursor-pointer transition-colors hover:bg-stone-800 hover:text-white min-h-8 text-stone-400" onClick={onSettingsClick}>
+            <FaCog className="text-base min-w-5 text-center" />
+            <span className="whitespace-nowrap overflow-hidden text-ellipsis">Settings</span>
           </div>
         </div>
-        <div className="sidebar-divider"></div>
+        <div className="h-px bg-stone-700"></div>
 
-        <div className='sidebar-header'>
-          <span className='text-sm'>Workspace Pages ({pages.length})</span>
+        <div className="flex justify-between items-center text-stone-400 p-2">
+          <span className="text-xs">Workspace Pages ({pages.length})</span>
           <FaPlus
-            className='plus-icon'
+            className="cursor-pointer text-stone-400 transition-colors hover:text-white"
             onClick={() => addPage('Untitled Page', null)}
           />
         </div>
 
-        <div className="sidebar-pages-section">
+        <div className="px-3 py-1.5">
           {renderPages(null)}
         </div>
 
         {contextMenu && (
           <div
             ref={contextMenuRef}
-            className='context-menu active'
+            className="absolute bg-stone-900 border border-stone-700 p-1.5 rounded-md shadow-md z-50 animate-in duration-200 ease-out"
             style={{ top: contextMenu.y, left: contextMenu.x }}
           >
             <div
               onClick={() => handleAddPage(contextMenu.pageId)}
-              className='context-menu-item'
+              className="flex items-center gap-1.5 px-2.5 py-1.5 cursor-pointer transition-colors hover:bg-stone-800"
             >
               <FaPlus /> New Subpage
             </div>
             <div
               onClick={() => handleDeletePage(contextMenu.pageId)}
-              className='context-menu-item delete'
+              className="flex items-center gap-1.5 px-2.5 py-1.5 cursor-pointer transition-colors hover:bg-red-900 text-red-400"
             >
               <FaTrash /> Delete Page
             </div>
           </div>
         )}
 
-        <div className='resize-handle' onMouseDown={startResizing}></div>
+        <div
+          className="absolute top-0 right-[-5px] w-2.5 h-full cursor-ew-resize bg-transparent z-10 hover:bg-white/20 active:bg-white/30"
+          onMouseDown={startResizing}
+        ></div>
       </div>
     </div>
   );

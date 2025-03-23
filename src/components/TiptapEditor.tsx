@@ -95,7 +95,7 @@ const TiptapEditor = ({ content, onUpdate }: TiptapEditorProps) => {
   }, [editor, content]);
 
   return (
-    <div ref={menuContainerRef}>
+    <div ref={menuContainerRef} className="relative w-full">
       <EditorContent editor={editor} className="editor-content" />
       {editor && <ImageBlockMenu editor={editor} appendTo={menuContainerRef} />}
     </div>
