@@ -18,7 +18,7 @@ const WorkspaceSwitcher: React.FC = () => {
   };
 
   return (
-    <div className="flex items-center justify-between w-full rounded-lg shadow-md hover:bg-gray-700 p-2">
+    <div className="flex items-center justify-between w-full rounded-lg hover:bg-[var(--active-item)] shadow-md p-2">
       <Popover>
         <PopoverTrigger asChild>
           <button className="flex items-center space-x-2 transition-all">
@@ -30,7 +30,7 @@ const WorkspaceSwitcher: React.FC = () => {
           </button>
         </PopoverTrigger>
 
-        <PopoverContent className="w-72 ml-2 p-0 border rounded-lg shadow-lg bg-gray-800 border-gray-600">
+        <PopoverContent className="w-72 ml-2 p-2 rounded-lg shadow-lg bg-[var(--sidebar-bg)] border border-stone-700">
           <div className="flex items-center justify-between px-2 py-1 rounded-md">
             <div className="flex items-center">
               <div className="w-6 h-6 rounded-sm mr-2 flex items-center justify-center">
@@ -46,11 +46,11 @@ const WorkspaceSwitcher: React.FC = () => {
           </div>
           <div className="mb-2 flex items-center justify-between px-2 py-1 rounded-md">
             <div className="flex items-center space-x-2">
-              <button className="hover:bg-gray-700 rounded-md py-1 px-2 transition-all flex items-center space-x-1 border border-gray-600">
+              <button className="hover:bg-[var(--active-item)] rounded-md py-1 px-2 transition-all flex items-center space-x-1 border border-gray-600">
                 <FaGears className="w-4 h-4 text-gray-300" />
                 <span className="text-xs text-gray-300">Settings</span>
               </button>
-              <button className="hover:bg-gray-700 rounded-md py-1 px-2 transition-all flex items-center space-x-1 border border-gray-600">
+              <button className="hover:bg-[var(--active-item)] rounded-md py-1 px-2 transition-all flex items-center space-x-1 border border-gray-600">
                 <FaUserPlus className="w-4 h-4 text-gray-300" />
                 <span className="text-xs text-gray-300">Invite</span>
               </button>
@@ -65,8 +65,8 @@ const WorkspaceSwitcher: React.FC = () => {
                 <li
                   key={workspace.id}
                   onClick={() => setCurrentWorkspace(workspace)}
-                  className={`text-sm m-1 p-1 rounded-md cursor-pointer text-gray-400 hover:text-white hover:bg-gray-700 transition-all ${
-                    workspace.id === currentWorkspace?.id ? 'bg-gray-700' : ''
+                  className={`text-sm m-1 p-1 rounded-md cursor-pointer text-gray-400 hover:text-white hover:bg-[var(--active-item)] transition-all ${
+                    workspace.id === currentWorkspace?.id ? 'bg-[var(--active-item)]' : ''
                   }`}
                 >
                   <span className="mr-1 inline-flex items-center align-middle">
@@ -82,18 +82,18 @@ const WorkspaceSwitcher: React.FC = () => {
               <li>
                 <button
                   onClick={() => setIsModalOpen(true)}
-                  className="rounded-md w-full text-left px-2 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white transition-all"
+                  className="rounded-md w-full text-left px-2 py-2 text-sm text-gray-300 hover:bg-[var(--active-item)] hover:text-white transition-all"
                 >
                   Create Workspace
                 </button>
               </li>
               <li>
-                <button className="rounded-md w-full text-left px-2 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white transition-all">
+                <button className="rounded-md w-full text-left px-2 py-2 text-sm text-gray-300 hover:bg-[var(--active-item)] hover:text-white transition-all">
                   Add another account
                 </button>
               </li>
               <li>
-                <button className="rounded-md text-red-500 w-full text-left px-2 py-2 text-sm hover:bg-gray-700 hover:text-red-600 transition-all">
+                <button className="rounded-md text-red-500 w-full text-left px-2 py-2 text-sm hover:bg-[var(--active-item)] hover:text-red-600 transition-all">
                   Log out
                 </button>
               </li>

@@ -64,6 +64,7 @@ body {
   color: var(--text-color);
   font-family: "Liberation Sans", sans-serif;
   font-size: var(--global-font-size);
+  color: var(--muted-text)
 }
 
 .text-xs {
