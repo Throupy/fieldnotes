@@ -15,6 +15,18 @@
   font-style: normal;
 }
 
+@layer utilities {
+
+    .no-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+
+    .no-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+  }
+}
+
 :root {
   --bg-color: #191919;
   --sidebar-bg: #202020;
@@ -77,6 +89,10 @@ body {
 
 .text-md {
   font-size: calc(var(--global-font-size) * 0.9) !important;
+}
+
+.text-4xl {
+    font-size: calc(var(--global-font-size) * 1.75) !important;
 }
 
 .app-container {

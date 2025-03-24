@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback, useMemo, useRef } from "react";
 import { usePages } from "../contexts/PageContext";
 import TitleEditor from "../components/TitleEditor";
 import TiptapEditor from "../components/TiptapEditor";
+import HomePage from "./HomePage";
 
 function debounce(func, wait) {
   let timeout;
@@ -89,7 +90,7 @@ const PageEditor = () => {
   );
 
   if (!page) {
-    return <p className="p-6">Select a page...</p>;
+    return <HomePage />;
   }
 
   return (
