@@ -157,20 +157,20 @@ const Sidebar = ({ onSettingsClick }: { onSettingsClick: () => void }) => {
       <div className="relative bg-[var(--sidebar-bg)] h-full overflow-y-auto overflow-x-hidden transition-all duration-200 ease border-r border-stone-700">
         <div className="flex flex-col gap-0.5 p-1 text-sm">
           <WorkspaceSwitcher />
-          <div className="flex items-center gap-2 py-1.5 px-2 rounded-md cursor-pointer transition-colors hover:bg-[var(--sidebar-bg)] hover:text-white min-h-8">
+          <div className="flex items-center gap-2 py-1.5 px-2 rounded-md cursor-pointer transition-colors hover:bg-[var(--active-item)] hover:text-white min-h-8">
             <FaSearch className="text-base min-w-5 text-center" />
             <span className="whitespace-nowrap overflow-hidden text-ellipsis">
               Search
             </span>
           </div>
-          <div className="flex items-center gap-2 py-1.5 px-2 rounded-md cursor-pointer transition-colors hover:bg-[var(--sidebar-bg)] hover:text-white min-h-8">
+          <div className="flex items-center gap-2 py-1.5 px-2 rounded-md cursor-pointer transition-colors hover:bg-[var(--active-item)] hover:text-white min-h-8">
             <FaHome className="text-base min-w-5 text-center" />
             <span className="whitespace-nowrap overflow-hidden text-ellipsis">
               Home
             </span>
           </div>
           <div
-            className="flex items-center gap-2 py-1.5 px-2 rounded-md cursor-pointer transition-colors hover:bg-[var(--sidebar-bg)] hover:text-white min-h-8"
+            className="flex items-center gap-2 py-1.5 px-2 rounded-md cursor-pointer transition-colors hover:bg-[var(--active-item)] hover:text-white min-h-8"
             onClick={onSettingsClick}
           >
             <FaCog className="text-base min-w-5 text-center" />
