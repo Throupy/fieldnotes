@@ -5,11 +5,11 @@
 - [X] Ability to change text size (e.g. with CTRL,+)
 - [X] Personal workspaces
 - [ ] Shared workspaces
-- [ ] Ability to upload images
+- [X] Ability to upload images
 - [X] Delete pages leaves orphans - implement cascade deleting
 - [X] New font
 - [ ] Ability to change font in settings
-- [ ] Fix animation - editor animation only runs on the first page selected
+- [X] Fix animation - editor animation only runs on the first page selected
 - [X] Smooth animations when expanding a set of nested pages
 - [X] Centrally manage styles and improve UX overall
 - [X] Move files to directories
@@ -19,6 +19,6 @@
 - [ ] Collaborative 'live updates' i.e. you don't have to switch pages to see updated. Allocate about 3 years to do this - expecting issues!!
 - [X] Should workspace state be in Authcontext? probably not.
 - [X] Style workspace switcher better
-- [ ] Title update causes couchDB sync with every char entered
-- [ ] Context menu improvements - text wrapping and maybe use shadcn popover?
-- [ ] Disable spellcheck in code blocks
+- [X] Title update causes couchDB sync with every char entered
+- [X] Context menu improvements - text wrapping and maybe use shadcn popover?
+- [X] Disable spellcheck in code blocks

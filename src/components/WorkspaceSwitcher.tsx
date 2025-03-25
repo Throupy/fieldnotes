@@ -7,7 +7,7 @@ import CreateWorkspaceModal from './CreateWorkspaceModal';
 
 const WorkspaceSwitcher: React.FC = () => {
   const { addPage } = usePages();
-  const { workspaces, currentWorkspace, setCurrentWorkspace, createWorkspace } = useAuth();
+  const { workspaces, currentWorkspace, setCurrentWorkspace, createWorkspace, logout } = useAuth();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleCreateWorkspace = async (name: string) => {
@@ -93,7 +93,10 @@ const WorkspaceSwitcher: React.FC = () => {
                 </button>
               </li>
               <li>
-                <button className="rounded-md text-red-500 w-full text-left px-2 py-2 text-sm hover:bg-[var(--active-item)] hover:text-red-600 transition-all">
+                <button
+                  className="rounded-md text-red-500 w-full text-left px-2 py-2 text-sm hover:bg-[var(--active-item)] hover:text-red-600 transition-all"
+                  onClick={() => logout()}
+                >
                   Log out
                 </button>
               </li>
