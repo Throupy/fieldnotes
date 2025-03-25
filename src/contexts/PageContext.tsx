@@ -9,6 +9,8 @@ interface Page {
   content: string;
   icon: string;
   parent: string | null;
+  createdAt: number;
+  updatedAt: number;
 }
 
 interface PageContextType {

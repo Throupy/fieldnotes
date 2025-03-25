@@ -14,14 +14,18 @@ import {
   ContextMenuItem,
   ContextMenuTrigger,
 } from "../components/ui/context-menu";
+
+import SearchModal from "../components/SearchModal";
 import { usePages } from "../contexts/PageContext";
 import WorkspaceSwitcher from "./WorkspaceSwitcher";
+import { useAuth } from "../contexts/AuthContext";
 
 const Sidebar = ({ onSettingsClick }: { onSettingsClick: () => void }) => {
   const { pages, setSelectedPageId, addPage, deletePageInContext } = usePages();
   const [expanded, setExpanded] = useState<{ [key: string]: boolean }>({});
   const [sidebarWidth, setSidebarWidth] = useState(250);
   const [isResizing, setIsResizing] = useState(false);
+  const { currentWorkspace } = useAuth();
   const sidebarRef = useRef<HTMLDivElement | null>(null);
 
   // Handle sidebar resizing
@@ -157,12 +161,7 @@ const Sidebar = ({ onSettingsClick }: { onSettingsClick: () => void }) => {
       <div className="relative bg-[var(--sidebar-bg)] h-full overflow-y-auto no-scrollbar overflow-x-hidden transition-all duration-200 ease border-r border-stone-700">
         <div className="flex flex-col gap-0.5 p-1 text-sm">
           <WorkspaceSwitcher />
-          <div className="flex items-center gap-2 py-1.5 px-2 rounded-md cursor-pointer transition-colors hover:bg-[var(--active-item)] hover:text-white min-h-8">
-            <FaSearch className="text-base min-w-5 text-center" />
-            <span className="whitespace-nowrap overflow-hidden text-ellipsis">
-              Search
-            </span>
-          </div>
+          <SearchModal pages={pages}/>
           <div
             className="flex items-center gap-2 py-1.5 px-2 rounded-md cursor-pointer transition-colors hover:bg-[var(--active-item)] hover:text-white min-h-8"
             onClick={() => setSelectedPageId(null)}

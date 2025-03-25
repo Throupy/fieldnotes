@@ -9,6 +9,33 @@ const HomePage = () => {
 
   const displayedPages = (pages || []).slice(0, 20);
 
+  const formatTimeSince = (timestamp: number): string => {
+    const date = new Date(timestamp);
+    const now = new Date();
+    const seconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+
+    if (isNaN(date.getTime())) return "some time ago";
+
+    let interval = Math.floor(seconds / 31536000);
+    if (interval >= 1) return interval === 1 ? "1 year ago" : `${interval} years ago`;
+
+    interval = Math.floor(seconds / 2592000);
+    if (interval >= 1) return interval === 1 ? "1 month ago" : `${interval} months ago`;
+
+    interval = Math.floor(seconds / 86400);
+    if (interval >= 1) return interval === 1 ? "1 day ago" : `${interval} days ago`;
+
+    interval = Math.floor(seconds / 3600);
+    if (interval >= 1) return interval === 1 ? "1 hour ago" : `${interval} hours ago`;
+
+    interval = Math.floor(seconds / 60);
+    if (interval >= 1) return interval === 1 ? "1 minute ago" : `${interval} minutes ago`;
+
+    if (seconds < 10) return "Just Now";
+
+    return `${Math.floor(seconds)} seconds ago`;
+  }
+
   return (
     <div className="min-h-screen animate-in fade-in slide-in-from-bottom-5 duration-300">
       <h1 className="p-7 font-bold text-[#d4d4d4] text-4xl text-center capitalize">Welcome, {user}</h1>
@@ -26,7 +53,7 @@ const HomePage = () => {
                 <div
                   key={page._id} 
                   onClick={() => setSelectedPageId(page._id)}
-                  className="hover:bg-[var(--active-item)] cursor-pointer relative rounded-lg bg-[var(--sidebar-bg)] transition-colors duration-200 overflow-hidden"
+                                  className="hover:bg-[var(--active-item)] cursor-pointer relative rounded-lg bg-[var(--sidebar-bg)] transition-colors duration-200 overflow-hidden"
                 >
                   <div
                     className="absolute top-0 left-0 w-full h-[30%] bg-[var(--active-item)] rounded-t-lg"
@@ -43,7 +70,7 @@ const HomePage = () => {
                         {user ? user.charAt(0).toUpperCase() : 'U'}
                       </div>
                       <p className="text-gray-400 text-xs">
-                        2 Days Ago 
+                        {formatTimeSince(page.updatedAt)}
                       </p>
                     </div>
                   </div>
