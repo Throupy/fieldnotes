@@ -1,39 +1,53 @@
 import React, { useState } from "react";
-import { FaPaintRoller, FaSync, FaUser } from "react-icons/fa";
+import { UserIcon, PaletteIcon, RefreshCcwIcon, CogIcon, BellIcon, KeyIcon, UsersIcon } from "lucide-react";
 import { useAuth } from "../contexts/AuthContext";
+import UserSettings from "./settings/AccountSettings";
+import PreferenceSettings from "./settings/PreferenceSettings";
 
 const SettingsModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
-  const [activeSection, setActiveSection] = useState("Account");
+  const [activeSection, setActiveSection] = useState("User");
   const [serverUrl, setServerUrl] = useState("");
-  const [fontSize, setFontSize] = useState(16); 
-  const [theme, setTheme] = useState("system"); 
+  const [fontSize, setFontSize] = useState(16);
+  const [theme, setTheme] = useState("system");
   const { user } = useAuth();
 
-  const sections = [
-    { name: "Account", icon: <FaUser /> },
-    { name: "Appearance", icon: <FaPaintRoller /> },
-    { name: "Syncing", icon: <FaSync /> },
-  ];
+  const sections = {
+    "Account": [
+      { name: "User", icon: <UserIcon strokeWidth={1} /> },
+      { name: "Preferences", icon: <CogIcon strokeWidth={1} /> },
+      { name: "Notifications", icon: <BellIcon strokeWidth={1} /> },
+    ],
+    "Workspace": [
+      { name: "Appearance", icon: <PaletteIcon strokeWidth={1} /> },
+      { name: "Connection", icon: <RefreshCcwIcon strokeWidth={1} /> },
+      { name: "People", icon: <UsersIcon strokeWidth={1} /> },
+      { name: "Security", icon: <KeyIcon strokeWidth={1} /> },
+    ],
+  };
 
   return (
-    <div className="fixed inset-0 bg-[rgba(0,0,0,0.5)] flex items-center justify-center z-50">
+    <div className="fixed text-md inset-0 bg-[rgba(0,0,0,0.5)] flex items-center justify-center z-50">
       <div className="bg-[var(--bg-color)] text-[var(--text-color)] border-1 border-[var(--sidebar-border)] rounded-lg shadow-lg w-full max-w-6xl h-[80vh] flex opacity-100">
         <div className="w-64 bg-[var(--sidebar-bg)] border-r border-[var(--sidebar-border)] p-4">
-          <h1 className="text-lg font-bold mb-6">Settings</h1>
-          <nav className="space-y-2">
-            {sections.map((section) => (
-              <button
-                key={section.name}
-                onClick={() => setActiveSection(section.name)}
-                className={`w-full text-left py-2 px-4 rounded-md flex items-center gap-2 ${
-                  activeSection === section.name
-                    ? "bg-[var(--active-item)] text-[var(--text-color)]"
-                    : "hover:bg-[var(--active-item)]"
-                }`}
-              >
-                <span>{section.icon}</span>
-                <span>{section.name}</span>
-              </button>
+          <nav className="space-y-0">
+            {Object.keys(sections).map((sectionName) => (
+              <div className="space-y-0.5 mb-4" key={sectionName}>
+                <h3 className="text-sm font-bold text-[var(--muted-text)] mb-2">{sectionName}</h3>
+                {sections[sectionName].map((item) => (
+                  <button
+                    key={item.name}
+                    onClick={() => setActiveSection(item.name)}
+                    className={`w-full text-left py-1 px-4 rounded-md flex items-center gap-2 ${
+                      activeSection === item.name
+                        ? "bg-[var(--active-item)] text-[var(--text-color)]"
+                        : "hover:bg-[var(--active-item)]"
+                    }`}
+                  >
+                    <span>{item.icon}</span>
+                    <span>{item.name}</span>
+                  </button>
+                ))}
+              </div>
             ))}
           </nav>
         </div>
@@ -43,46 +57,9 @@ const SettingsModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
             <h2 className="text-2xl font-bold">{activeSection}</h2>
           </div>
           <div className="bg-[var(--sidebar-bg)] p-4 rounded-[var(--border-radius)] border border-[var(--sidebar-border)]">
-            {activeSection === "Account" && (
-              user === null ? (
-                <p>You are not logged in</p>
-              ) : (
-                <div>Logged in as {user}</div>
-              )
-            )}
-            {activeSection === "Appearance" && (
-              <div>
-                <div className="mb-4">
-                  <label className="block text-sm font-medium mb-2">Font Size</label>
-                  <select
-                    value={fontSize}
-                    onChange={(e) => setFontSize(Number(e.target.value))}
-                    className="block w-full p-2 bg-[var(--bg-color)] border-[var(--sidebar-border)] rounded-md shadow-sm focus:ring-[var(--primary-button)] focus:border-[var(--primary-button)] text-[var(--text-color)] sm:text-sm"
-                  >
-                    {Array.from({ length: (24 - 12) / 2 + 1 }, (_, i) => 12 + i * 2).map((size) => (
-                      <option key={size} value={size}>
-                        {size}px
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div className="mb-4">
-                  <label className="block text-sm font-medium mb-2">Theme</label>
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={theme === "dark"}
-                      onChange={(e) => setTheme(e.target.checked ? "dark" : "light")}
-                      className="sr-only peer"
-                    />
-                    <div className="w-14 h-7 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-[var(--primary-button)] rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--primary-button)]"></div>
-                    <span className="ml-3 text-sm font-medium">Light</span>
-                    <span className="ml-2 text-sm font-medium">Dark</span>
-                  </label>
-                </div>
-              </div>
-            )}
-            {activeSection === "Syncing" && (
+            {activeSection === "User" && <UserSettings user={user} />}
+            {activeSection === "Preferences" && <PreferenceSettings />}
+            {activeSection === "Connection" && (
               <div>
                 <div className="mb-4">
                   <label className="block text-sm font-medium mb-2">Server to Connect</label>
