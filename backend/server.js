@@ -29,9 +29,6 @@ app.use(cors({
 
 PouchDB.plugin(PouchAuth)
 
-console.log(process.env.COUCHDB_ADMIN_USERNAME)
-console.log(process.env.COUCHDB_ADMIN_PASSWORD)
-
 const loginLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15min
     max: 10,
@@ -93,6 +90,85 @@ const createWorkspaceDB = async (workspaceId, ownerUsername) => {
 
 const SECRET_KEY = process.env.JWT_SECRET || 'supersecret';
 
+app.post('/update-profile', upload.single('profilePic'), async (request, response) => {
+    const authSession = request.cookies?.AuthSession;
+    const { email, password, currentPassword } = request.body;
+    const profilePic = request.file;
+
+    if (!authSession) {
+        return response.status(401).json({ error: 'Authentication required' });
+    }
+
+    try {
+        const sessionResponse = await fetch('http://localhost:5984/_session', {
+            method: 'GET',
+            headers: {
+                'Cookie': `AuthSession=${authSession}`
+            }
+        });
+        
+        if (!sessionResponse.ok) {
+            return response.status(401).json({ error: 'Invalid session' });
+        }
+
+        const sessionData = await sessionResponse.json();
+        const username = sessionData.userCtx.name;
+
+        if (!username) {
+            return response.status(401).json({ error: 'User not authenticated' });
+        }
+
+        const userDoc = await usersDB.get(`org.couchdb.user:${username}`);
+
+        if (password && currentPassword) {
+            await usersDB.logIn(username, currentPassword);
+            await usersDB.changePassword(username, password, {
+                metadata: userDoc.metadata
+            });
+        }
+
+        if (email) {
+            userDoc.email = email
+        }
+
+        if (profilePic) {
+            const updatedDoc = await usersDB.putAttachment(
+                `org.couchdb.user:${username}`,
+                'profilePic',
+                userDoc._rev,
+                profilePic.buffer,
+                profilePic.mimetype
+            );
+            userDoc._rev = updatedDoc._rev;
+        }
+
+        if (email) {
+            await usersDB.put(userDoc);
+        }
+
+        let profilePicture = null;
+        const refreshedDoc = await usersDB.get(`org.couchdb.user:${username}`, { attachments: true });
+        if (refreshedDoc._attachments?.profilePic) {
+            const { content_type, data } = refreshedDoc._attachments.profilePic;
+            profilePicture = `data:${content_type};base64,${data}`;
+          } else if (profilePic) {
+            profilePicture = `data:${profilePic.mimetype};base64,${profilePic.buffer.toString('base64')}`;
+        }
+
+        response.json({
+            email: email || userDoc.email,
+            profilePicture
+        })
+
+    } catch (error) {
+        console.error('Profile update error:', error);
+        if (error.message === 'Name or password is incorrect.') {
+          return response.status(401).json({ error: 'Current password is incorrect' });
+        }
+        response.status(500).json({ error: 'Failed to update profile' });
+    }
+});
+
 app.post('/register', registerLimiter, upload.single('profilePic'), async (request, response) => {
     console.log(request.body)
     console.log(request.file)
@@ -107,7 +183,7 @@ app.post('/register', registerLimiter, upload.single('profilePic'), async (reque
     try {
         console.log("startin gsingup")
         await usersDB.signUp(username, password, {
-            metadata: { role: 'user', workspaces: [personalWorkspaceId] }
+            metadata: { role: 'user', workspaces: [personalWorkspaceId], email: email }
         })
         console.log('User registered successfully');
         const userDoc = await usersDB.get(`org.couchdb.user:${username}`);
@@ -167,14 +243,17 @@ app.post('/login', loginLimiter, async (request, response) => {
             profilePicture = `data:${content_type};base64,${data}`;
         }
 
+        let email = userDoc.email;
+
         const setCookieHeader = sessionResponse.headers.get('set-cookie');
         console.log("Set cookie header: ", setCookieHeader);
         const sessionToken = setCookieHeader?.match(/AuthSession=([^;]+)/)?.[1];
         if (!sessionToken) throw new Error('No session token in the response');
 
         // Set CouchDB session cookie
+        console.log("Returning email", email)
         response.cookie('AuthSession', sessionToken, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax' });
-        response.json({ message: 'Login successful', username, workspaceIds, profilePicture });
+        response.json({ message: 'Login successful', username, email, workspaceIds, profilePicture });
     } catch (err) {
         console.error('Login error:', err);
         response.status(401).json({ error: 'Invalid credentials' });

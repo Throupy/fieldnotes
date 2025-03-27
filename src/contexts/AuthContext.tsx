@@ -15,8 +15,16 @@ type RegisterInput = {
 
 type User = {
   username: string,
+  email: string,
   workspaceIds: string[],
   profilePicture?: string
+}
+
+type UpdateProfileInput = {
+  email?: string;
+  password?: string;
+  currentPassword?: string;
+  profilePic?: File;
 }
 
 type AuthContextType = {
@@ -28,6 +36,7 @@ type AuthContextType = {
   logout: () => void
   register: ({email, username, password, profilePic}: RegisterInput) => Promise<boolean>
   createWorkspace: (name: string) => Promise<boolean>;
+  updateProfile: (updates: UpdateProfileInput) => Promise<boolean>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -46,6 +55,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         .then(data => {
             setUser({
               username: data.name,
+              email: data.email,
               workspaceIds: data.workspaceIds,
               profilePicture: data.profilePicture
             })
@@ -87,14 +97,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         });
 
         if (!response.ok) throw new Error('Login failed');
-        const { username, workspaceIds, profilePicture } = await response.json();
+        const { username, email, workspaceIds, profilePicture } = await response.json();
         const workspaceList = workspaceIds.map((id: string) => ({
           id,
           name: idToName(id),
         }));
         console.log("login successful, setting user to ", username, workspaceIds, profilePicture)
         setUser({
-          username, workspaceIds, profilePicture
+          username, email, workspaceIds, profilePicture
         })
 
         setWorkspaces(workspaceList);
@@ -156,9 +166,42 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     return response.ok ? await login(username, password) : false;
   };
 
+  const updateProfile = async({ email, password, currentPassword, profilePic }: UpdateProfileInput) => {
+    if (!user) return false
+
+    try {
+      const formData = new FormData()
+      if (email) formData.append('email', email)
+      if (password && currentPassword) {
+        formData.append('password', password)
+        formData.append('currentPassword', currentPassword)
+      }
+      if (profilePic) formData.append('profilePic', profilePic)
+
+      const response = await fetch('http://localhost:4000/update-profile', {
+          method: 'POST',
+          body: formData,
+          credentials: 'include'
+      });
+
+      if (!response.ok) throw new Error('Update failed');
+
+      const updatedData = await response.json();
+      setUser(prev => ({
+        ...prev!,
+        email: updatedData.email || prev!.email,
+        profilePicture: updatedData.profilePicture || prev!.profilePicture
+      }))
+      return true
+    } catch (err) {
+      console.error("Profile update error: ", err)
+      return false
+    }
+  }
+
   return (
     <AuthContext.Provider
-      value={{ user, workspaces, currentWorkspace, setCurrentWorkspace, login, logout, register, createWorkspace }}
+      value={{ user, workspaces, currentWorkspace, setCurrentWorkspace, login, logout, register, createWorkspace, updateProfile }}
     >
       {children}
     </AuthContext.Provider>

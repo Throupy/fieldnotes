@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { UserIcon, PaletteIcon, RefreshCcwIcon, CogIcon, BellIcon, KeyIcon, UsersIcon } from "lucide-react";
 import { useAuth } from "../contexts/AuthContext";
-import UserSettings from "./settings/AccountSettings";
+import AccountSettings from "./settings/AccountSettings";
 import PreferenceSettings from "./settings/PreferenceSettings";
 
 const SettingsModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
@@ -9,7 +9,7 @@ const SettingsModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const [serverUrl, setServerUrl] = useState("");
   const [fontSize, setFontSize] = useState(16);
   const [theme, setTheme] = useState("system");
-  const { user } = useAuth();
+  const { user, updateProfile } = useAuth();
 
   const sections: {
     [key: string]: Array<{ name: string; icon: React.ReactNode }>
@@ -59,7 +59,7 @@ const SettingsModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
             <h2 className="text-2xl font-bold">{activeSection}</h2>
           </div>
           <div className="bg-[var(--sidebar-bg)] p-4 rounded-[var(--border-radius)] border border-[var(--sidebar-border)]">
-            {activeSection === "User" && <UserSettings user={user} />}
+            {activeSection === "User" && <AccountSettings user={user} updateProfile={updateProfile}/>}
             {activeSection === "Preferences" && <PreferenceSettings />}
             {activeSection === "Connection" && (
               <div>
