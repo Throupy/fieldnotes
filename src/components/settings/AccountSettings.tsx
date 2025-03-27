@@ -1,4 +1,5 @@
 import React from "react";
+import UserProfilePicture from "../UserProfilePicture";
 
 interface UserSettingsProps {
   user: string | null;
@@ -16,7 +17,7 @@ const UserSettings: React.FC<UserSettingsProps> = ({ user }) => {
         <h3 className="text-lg font-semibold mb-4">Account</h3>
         <div className="flex items-center space-x-4">
           <div className="w-16 h-16 rounded-full bg-gray-300 flex items-center justify-center text-gray-600 text-2xl">
-            {user.charAt(0).toUpperCase()}
+            <UserProfilePicture user={user} />
           </div>
           <div className="flex-1">
             <label className="block text-sm font-medium mb-1 text-[var(--text-color)]">
@@ -24,13 +25,10 @@ const UserSettings: React.FC<UserSettingsProps> = ({ user }) => {
             </label>
             <input
               type="text"
-              value={user}
+              value={user.username}
               readOnly
               className="w-full p-2 bg-[var(--bg-color)] border border-[var(--sidebar-border)] rounded-md text-[var(--text-color)] sm:text-sm"
             />
-            <button className="text-blue-500 text-sm mt-1 hover:underline">
-              Create your portrait
-            </button>
           </div>
         </div>
       </div>
@@ -41,7 +39,7 @@ const UserSettings: React.FC<UserSettingsProps> = ({ user }) => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-[var(--text-color)]">Email</p>
-              <p className="text-sm text-[var(--muted-text)]">{`${user.toLowerCase()}@gmail.com`}</p>
+              <p className="text-sm text-[var(--muted-text)]">{`${user.username.toLowerCase()}@gmail.com`}</p>
             </div>
             <button className="bg-[var(--bg-color)] border border-[var(--sidebar-border)] text-[var(--text-color)] py-1 px-3 rounded-md text-sm">
               Change email

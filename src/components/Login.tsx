@@ -1,17 +1,20 @@
 import { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import Register from '../components/Register';
 
 const Login = () => {
   const { login, register } = useAuth();
+  const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [isRegister, setIsRegister] = useState(false);
+  const [profilePic, setProfilePic] = useState<File | null>(null);
+  const [isRegister, setIsRegister] = useState(true);
   const [error, setError] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const success = isRegister
-      ? await register(username, password)
+      ? await register({username, password, email, profilePic})
       : await login(username, password);
 
     if (!success) setError("Authentication Failed");
@@ -31,6 +34,21 @@ const Login = () => {
         )}
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          {isRegister && (
+            <div>
+              <label className="block text-sm font-medium mb-2 text-[var(--text-color)]">
+                Email
+              </label>
+              <input
+                type="text"
+                placeholder="Enter your email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full p-3 bg-[var(--sidebar-bg)] border border-[var(--sidebar-border)] rounded-md text-[var(--text-color)] placeholder-gray-400 focus:ring-1 focus:ring-[var(--primary-button)] focus:border-[var(--primary-button)] transition-all"
+              />
+            </div>
+          )}
+
           <div>
             <label className="block text-sm font-medium mb-2 text-[var(--text-color)]">
               Username
@@ -56,6 +74,21 @@ const Login = () => {
               className="w-full p-3 bg-[var(--sidebar-bg)] border border-[var(--sidebar-border)] rounded-md text-[var(--text-color)] placeholder-gray-400 focus:ring-2 focus:ring-[var(--primary-button)] focus:border-[var(--primary-button)] transition-all"
             />
           </div>
+
+          {isRegister && (
+            <div>
+              <label htmlFor="file_upload" className="block text-sm font-medium mb-2 text-[var(--text-color)]">
+                Profile Picture (optional)
+              </label>
+              <input
+                id="file_upload"
+                type="file"
+                accept="image/*"
+                onChange={(e) => setProfilePic(e.target.files?.[0] || null)}
+                className="block w-full text-sm text-[var(--text-color)] file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-[var(--primary-button)] file:text-[var(--text-color)] hover:file:bg-[var(--primary-button-hover)] bg-[var(--sidebar-bg)] border border-[var(--sidebar-border)] rounded-md p-3 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[var(--primary-button)] focus:border-[var(--primary-button)] transition-all"
+              />
+            </div>
+          )}
 
           <button
             type="submit"

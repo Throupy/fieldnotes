@@ -6,21 +6,34 @@ type Workspace = {
   name?: string // got from backend, or derived from id
 }
 
+type RegisterInput = {
+  email: string,
+  username: string,
+  password: string,
+  profilePic?: File | null
+}
+
+type User = {
+  username: string,
+  workspaceIds: string[],
+  profilePicture?: string
+}
+
 type AuthContextType = {
-  user: string | null
+  user: User | null
   workspaces: Workspace[]
   currentWorkspace: Workspace | null
   setCurrentWorkspace: (workspace: Workspace) => void
   login: (username: string, password: string) => Promise<boolean>
   logout: () => void
-  register: (username: string, password: string) => Promise<boolean>
+  register: ({email, username, password, profilePic}: RegisterInput) => Promise<boolean>
   createWorkspace: (name: string) => Promise<boolean>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [user, setUser] = useState<string | null>(null)
+  const [user, setUser] = useState<User | null>(null)
   const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
   const [currentWorkspace, setCurrentWorkspace] = useState<Workspace | null>(null);
 
@@ -31,7 +44,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     fetch('http://localhost:4000/login', { credentials: 'include' })
         .then(res => res.ok ? res.json() : Promise.reject())
         .then(data => {
-            setUser(data.name);
+            setUser({
+              username: data.name,
+              workspaceIds: data.workspaceIds,
+              profilePicture: data.profilePicture
+            })
             const workspaceList = data.workspaceIds.map((id: string) => ({
               id,
               name: idToName(id), // Derive name if backend doesn't provide it
@@ -60,22 +77,26 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       .join(' ');
   };
   
-  const login = async (username: string, password: string) => {
+  const login = async (_username: string, password: string) => {
     try {
         const response = await fetch('http://localhost:4000/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, password }),
+            body: JSON.stringify({ username: _username, password }),
             credentials: 'include'
         });
 
         if (!response.ok) throw new Error('Login failed');
-        const { workspaceIds } = await response.json();
+        const { username, workspaceIds, profilePicture } = await response.json();
         const workspaceList = workspaceIds.map((id: string) => ({
           id,
           name: idToName(id),
         }));
-        setUser(username);
+        console.log("login successful, setting user to ", username, workspaceIds, profilePicture)
+        setUser({
+          username, workspaceIds, profilePicture
+        })
+
         setWorkspaces(workspaceList);
         if (workspaceList.length > 0) {
           setCurrentWorkspace(workspaceList[0]);
@@ -118,11 +139,18 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }
 
-  const register = async (username: string, password: string) => {
+  const register = async ({ email, username, password, profilePic }: RegisterInput) => {
+    const formData = new FormData()
+    formData.append('email', email)
+    formData.append('username', username)
+    formData.append('password', password)
+    if (profilePic) {
+      formData.append('profilePic', profilePic)
+    }
+
     const response = await fetch('http://localhost:4000/register', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password }),
+        body: formData,
         credentials: 'include'
     });
     return response.ok ? await login(username, password) : false;

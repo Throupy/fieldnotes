@@ -2,6 +2,7 @@ import React from 'react';
 import { usePages } from '../contexts/PageContext';
 import { useAuth } from '../contexts/AuthContext';
 import { FaClock } from 'react-icons/fa';
+import UserProfilePicture from './UserProfilePicture';
 
 const HomePage = () => {
   const { user } = useAuth();
@@ -38,7 +39,7 @@ const HomePage = () => {
 
   return (
     <div className="min-h-screen animate-in fade-in slide-in-from-bottom-5 duration-300">
-      <h1 className="p-7 font-bold text-[#d4d4d4] text-4xl text-center capitalize">Welcome, {user}</h1>
+      <h1 className="p-7 font-bold text-[#d4d4d4] text-4xl text-center capitalize">Welcome, {user?.username}</h1>
       <div className="flex justify-center">
         <div className="w-full max-w-6xl">
           <div className="text-sm px-5 py-3 text-gray-400 flex items-center">
@@ -66,9 +67,7 @@ const HomePage = () => {
                       {page.title || 'Untitled'}
                     </h3>
                     <div className="flex items-center space-x-2 mt-2">
-                      <div className="w-5 h-5 rounded-full bg-gray-500 flex items-center justify-center text-white text-xs">
-                        {user ? user.charAt(0).toUpperCase() : 'U'}
-                      </div>
+                      <UserProfilePicture user={user} className="w-5 h-5 rounded-full bg-gray-500 flex items-center justify-center text-white text-xs"/>
                       <p className="text-gray-400 text-xs">
                         {formatTimeSince(page.updatedAt)}
                       </p>

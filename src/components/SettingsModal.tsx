@@ -11,7 +11,9 @@ const SettingsModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const [theme, setTheme] = useState("system");
   const { user } = useAuth();
 
-  const sections = {
+  const sections: {
+    [key: string]: Array<{ name: string; icon: React.ReactNode }>
+  } = {
     "Account": [
       { name: "User", icon: <UserIcon strokeWidth={1} /> },
       { name: "Preferences", icon: <CogIcon strokeWidth={1} /> },
