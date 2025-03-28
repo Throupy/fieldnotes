@@ -37,7 +37,6 @@
   --primary-button: #5c7cfa;
   --primary-button-hover: #4263eb;
   --border-radius: 6px;
-  --global-font-size: 16px;
   --radius: 0.625rem;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
@@ -75,24 +74,7 @@ body {
   background-color: var(--bg-color);
   color: var(--text-color);
   font-family: "Liberation Sans", sans-serif;
-  font-size: var(--global-font-size);
   color: var(--muted-text)
-}
-
-.text-xs {
-  font-size: calc(var(--global-font-size) * 0.7) !important;
-}
-
-.text-sm {
-  font-size: calc(var(--global-font-size) * 0.805) !important;
-}
-
-.text-md {
-  font-size: calc(var(--global-font-size) * 0.9) !important;
-}
-
-.text-4xl {
-    font-size: calc(var(--global-font-size) * 1.75) !important;
 }
 
 .app-container {

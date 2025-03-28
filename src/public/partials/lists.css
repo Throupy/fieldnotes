@@ -41,8 +41,8 @@
     ul[data-type="taskList"] input[type="checkbox"] {
     cursor: pointer;
     appearance: none;
-    width: var(--global-font-size);
-    height: var(--global-font-size);
+    width: 16px;
+    height: 16px;
     margin: 0;
     flex-shrink: 0;
     background-color: #191919;
@@ -60,7 +60,7 @@
 
     ul[data-type="taskList"] input[type="checkbox"]:checked::after {
         color: white;
-        font-size: var(--global-font-size);
+        font-size: 16px;
         font-weight: bold;
         position: absolute;
     }
