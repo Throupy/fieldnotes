@@ -99,6 +99,28 @@ app.post('/update-profile', upload.single('profilePic'), async (request, respons
         return response.status(401).json({ error: 'Authentication required' });
     }
 
+    if (email) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            return response.status(400).json({ error: 'Invalid email format' });
+        }
+        if (email.length > 50) {
+            return response.status(400).json({ error: 'Email too long' });
+        }
+    }
+
+    if (password) {
+        if (!currentPassword) {
+            return response.status(400).json({ error: 'Current password is required to change password' });
+        }
+        if (password.length < 6) {
+            return response.status(400).json({ error: 'Password must be at least 6 characters long' });
+        }
+        if (password === currentPassword) {
+            return response.status(400).json({ error: 'New password must be different from current password' });
+        }
+    }
+
     try {
         const sessionResponse = await fetch('http://localhost:5984/_session', {
             method: 'GET',
