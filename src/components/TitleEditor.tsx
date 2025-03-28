@@ -55,37 +55,35 @@ const TitleEditor = ({
   };
 
   return (
-    <div className="relative flex items-center mb-2.5 text-3xl">
-      <div
-        className="mr-2.5 cursor-pointer p-1.5 text-3xl"
-        onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+    <div className="relative flex items-center mb-2.5">
+      <div className="cursor-pointer p-1.5 text-5xl mb-2"
+      onClick={() => setShowEmojiPicker(!showEmojiPicker)}
       >
-        {page?.icon || "📄"}
+      {page?.icon || "📄"}
       </div>
       <input
-        type="text"
-        value={title}
-        onChange={(e) => onUpdate(e.target.value)}
-        placeholder="Untitled"
-        className="flex-grow font-bold bg-transparentborder-none outline-none p-3 border-b border-stone-600"
+      type="text"
+      value={title}
+      onChange={(e) => onUpdate(e.target.value)}
+      placeholder="Untitled"
+      className="text-5xl font-bold bg-transparent border-none outline-none p-3 border-b border-stone-600"
       />
-
       <div
-        ref={pickerRef}
-        className={`absolute top-full left-0 z-[1000] ${
-          showEmojiPicker
-            ? "animate-in zoom-in-95 duration-200"
-            : "animate-out zoom-out-95 duration-200 opacity-0"
-        }`}
+      ref={pickerRef}
+      className={`absolute top-full left-0 z-[1000] ${
+        showEmojiPicker
+        ? "animate-in zoom-in-95 duration-200"
+        : "animate-out zoom-out-95 duration-200 opacity-0"
+      }`}
       >
-        {showEmojiPicker && (
-          <EmojiPicker
-            theme={resolvedTheme}
-            className="fieldnotes-emoji-picker text-sm"
-            onEmojiClick={handleEmojiClick}
-            lazyLoadEmojis={true}
-          />
-        )}
+      {showEmojiPicker && (
+        <EmojiPicker
+        theme={resolvedTheme}
+        className="fieldnotes-emoji-picker text-sm"
+        onEmojiClick={handleEmojiClick}
+        lazyLoadEmojis={true}
+        />
+      )}
       </div>
     </div>
   );

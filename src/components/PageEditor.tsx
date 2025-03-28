@@ -1,8 +1,11 @@
 import { useEffect, useState, useCallback, useMemo, useRef } from "react";
+import { BookOpenIcon, LockIcon, LockKeyholeIcon, MessageSquareIcon, MoreHorizontalIcon, StarIcon } from "lucide-react"
 import { usePages } from "../contexts/PageContext";
 import TitleEditor from "../components/TitleEditor";
 import TiptapEditor from "../components/TiptapEditor";
 import HomePage from "./HomePage";
+import React from "react";
+import PageEditorHeader from "./PageEditorHeader";
 
 function debounce(func, wait) {
   let timeout;
@@ -13,7 +16,7 @@ function debounce(func, wait) {
 }
 
 const PageEditor = () => {
-  const { pages, selectedPageId, updatePageInContext } = usePages();
+  const { pages, selectedPageId, updatePageInContext, setSelectedPageId } = usePages();
   const [editorState, setEditorState] = useState({
     title: "",
     initialContent: "",
@@ -95,7 +98,7 @@ const PageEditor = () => {
 
   return (
     <div
-      className={`flex-grow h-full overflow-y-auto p-6 ${
+      className={`flex-grow h-full overflow-y-auto px-6 ${
         showEditor
           ? 'animate-in fade-in slide-in-from-bottom-5 duration-300'
           : 'opacity-0'
@@ -103,6 +106,7 @@ const PageEditor = () => {
     >
       {showEditor && (
         <>
+          <PageEditorHeader page={page} pages={pages} setSelectedPageId={setSelectedPageId}/>
           <TitleEditor
             title={editorState.title}
             onUpdate={handleTitleUpdate}

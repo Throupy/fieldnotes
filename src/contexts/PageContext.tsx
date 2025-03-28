@@ -2,16 +2,7 @@ import { createContext, useContext, useState, useEffect, ReactNode, useCallback 
 import { getPages, updatePage, createPage, deletePage } from "../services/pagesService";
 import { setWorkspace } from "../services/db";
 import { useAuth } from "./AuthContext";
-
-interface Page {
-  _id: string;
-  title: string;
-  content: string;
-  icon: string;
-  parent: string | null;
-  createdAt: number;
-  updatedAt: number;
-}
+import { Page } from "../types";
 
 interface PageContextType {
   pages: Page[];
