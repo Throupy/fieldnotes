@@ -42,14 +42,14 @@ const CreateWorkspaceModal: React.FC<ModalProps> = ({ isOpen, onClose, onSubmit 
           <div className="flex justify-end gap-2">
             <button
               type="submit"
-              className="outline-[#3184de] outline-solid text-white outline-1 px-4 py-2 rounded-md hover:bg-[#3184de] transition-colors"
+              className="outline-[#3184de] outline-solid outline-1 px-4 py-2 rounded-md hover:bg-[#3184de] transition-colors"
             >
               Submit
             </button>
             <button
               type="button"
               onClick={onClose}
-              className="outline-gray-300 outline-solid text-white outline-1 px-4 py-2 rounded-md hover:bg-gray-400 transition-colors"
+              className="outline-gray-300 outline-solid outline-1 px-4 py-2 rounded-md hover:bg-gray-400 transition-colors"
             >
               Cancel
             </button>

@@ -121,7 +121,7 @@ const Sidebar = ({ onSettingsClick }: { onSettingsClick: () => void }) => {
                   </span>
                 </div>
               </ContextMenuTrigger>
-              <ContextMenuContent className="w-48 bg-[var(--sidebar-bg)] border border-stone-700 text-[var(--muted-text)]">
+              <ContextMenuContent className="w-48 bg-[var(--sidebar-bg)] border border-[var(--sidebar-border)] text-[var(--muted-text)]">
                 <ContextMenuItem
                   className="flex items-center gap-2 hover:bg-[var(--active-item)]"
                   onClick={() => handleAddPage(page._id)}
@@ -155,15 +155,15 @@ const Sidebar = ({ onSettingsClick }: { onSettingsClick: () => void }) => {
   return (
     <div
       ref={sidebarRef}
-      className="relative"
+      className="relative text-[var(--muted-text)]"
       style={{ width: `${sidebarWidth}px` }}
     >
-      <div className="relative bg-[var(--sidebar-bg)] h-full overflow-y-auto no-scrollbar overflow-x-hidden transition-all duration-200 ease border-r border-stone-700">
+      <div className="relative bg-[var(--sidebar-bg)] h-full overflow-y-auto no-scrollbar overflow-x-hidden transition-all duration-200 ease border-r border-[var(--sidebar-border)]">
         <div className="flex flex-col gap-0.5 p-1 text-sm">
           <WorkspaceSwitcher />
           <SearchModal pages={pages}/>
           <div
-            className="flex items-center gap-2 py-1.5 px-2 rounded-md cursor-pointer transition-colors hover:bg-[var(--active-item)] hover:text-white min-h-8"
+            className="flex items-center gap-2 py-1.5 px-2 rounded-md cursor-pointer transition-colors hover:bg-[var(--active-item)] min-h-8"
             onClick={() => setSelectedPageId(null)}
             >
             <FaHome className="text-base min-w-5 text-center" />
@@ -172,7 +172,7 @@ const Sidebar = ({ onSettingsClick }: { onSettingsClick: () => void }) => {
             </span>
           </div>
           <div
-            className="flex items-center gap-2 py-1.5 px-2 rounded-md cursor-pointer transition-colors hover:bg-[var(--active-item)] hover:text-white min-h-8"
+            className="flex items-center gap-2 py-1.5 px-2 rounded-md cursor-pointer transition-colors hover:bg-[var(--active-item)] min-h-8"
             onClick={onSettingsClick}
           >
             <FaCog className="text-base min-w-5 text-center" />
@@ -181,12 +181,12 @@ const Sidebar = ({ onSettingsClick }: { onSettingsClick: () => void }) => {
             </span>
           </div>
         </div>
-        <div className="h-px bg-stone-700"></div>
+        <div className="h-px bg-[var(--sidebar-border)]"></div>
 
-        <div className="flex justify-between items-center text-stone-400 p-2">
+        <div className="flex justify-between items-center p-2">
           <span className="text-xs">Workspace Pages ({pages.length})</span>
           <FaPlus
-            className="cursor-pointer text-stone-400 transition-colors hover:text-white"
+            className="cursor-pointer transition-colors"
             onClick={() => addPage("Untitled Page", null)}
           />
         </div>

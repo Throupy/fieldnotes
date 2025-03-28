@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import EmojiPicker, { Theme } from "emoji-picker-react";
 import { usePages } from "../contexts/PageContext";
+import { useSettings } from "../contexts/SettingsContext";
 
 const TitleEditor = ({
   title,
@@ -13,12 +14,38 @@ const TitleEditor = ({
 }) => {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const { updatePageInContext, pages } = usePages();
+  const { theme } = useSettings()
+  const pickerRef = useRef<HTMLDivElement>(null);
+  
   const page = pages.find((p) => p._id === pageId);
+
+  const resolvedTheme: Theme =
+    theme === "dark" ? Theme.DARK :
+    theme === "light" ? Theme.LIGHT :
+    window.matchMedia("(prefers-color-scheme: dark)").matches ? Theme.DARK : Theme.LIGHT;
 
   interface EmojiClickData {
     emoji: string;
     [key: string]: any;
   }
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (pickerRef.current && !pickerRef.current.contains(event.target as Node)) {
+        setShowEmojiPicker(false);
+      }
+    };
+  
+    if (showEmojiPicker) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+  
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showEmojiPicker]);
 
   const handleEmojiClick = (emoji: EmojiClickData) => {
     if (page) {
@@ -40,10 +67,11 @@ const TitleEditor = ({
         value={title}
         onChange={(e) => onUpdate(e.target.value)}
         placeholder="Untitled"
-        className="flex-grow font-bold bg-transparent text-white border-none outline-none p-3 border-b border-stone-600"
+        className="flex-grow font-bold bg-transparentborder-none outline-none p-3 border-b border-stone-600"
       />
 
       <div
+        ref={pickerRef}
         className={`absolute top-full left-0 z-[1000] ${
           showEmojiPicker
             ? "animate-in zoom-in-95 duration-200"
@@ -52,8 +80,8 @@ const TitleEditor = ({
       >
         {showEmojiPicker && (
           <EmojiPicker
-            theme={Theme.DARK}
-            className="fieldnotes-emoji-picker"
+            theme={resolvedTheme}
+            className="fieldnotes-emoji-picker text-sm"
             onEmojiClick={handleEmojiClick}
             lazyLoadEmojis={true}
           />

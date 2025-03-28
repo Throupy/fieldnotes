@@ -1,6 +1,6 @@
 .ProseMirror {
   code {
-    @apply caret-white text-red-500 bg-[#202020] p-1 rounded-sm shadow-lg font-mono;
+    @apply text-red-500 bg-[#202020] p-1 rounded-sm shadow-lg font-mono;
 
     &::selection {
       @apply bg-white/30;
@@ -8,7 +8,7 @@
   }
 
   pre {
-    @apply caret-white text-white rounded my-4 p-4 shadow-lg overflow-x-auto text-wrap;
+    @apply rounded my-4 p-4 shadow-lg overflow-x-auto text-wrap;
 
     *::selection {
       @apply bg-white/20;
@@ -73,8 +73,10 @@
 }
 
 pre {
-    background-color: #202020;
-    color: #FFF;
+    background-color: var(--code-bg);
+    color: var(--code-text) !important;
+    font-weight: 500 !important;
+    caret-color: var(--code-text) !important;
     font-family: 'JetBrainsMono', monospace;
     padding: 0.75rem 1rem;
     border-radius: 0.5rem;

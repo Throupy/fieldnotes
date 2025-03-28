@@ -5,7 +5,8 @@ import { useAuth } from '../contexts/AuthContext';
 import {
   Dialog,
   DialogContent,
-  DialogTrigger
+  DialogTrigger,
+  DialogTitle
 } from "../components/ui/dialog";
 
 const SearchModal = ({ pages }) => {
@@ -89,7 +90,7 @@ const SearchModal = ({ pages }) => {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <div className="flex items-center gap-2 py-1.5 px-2 rounded-md cursor-pointer transition-colors hover:bg-[var(--active-item)] hover:text-white min-h-8">
+        <div className="flex items-center gap-2 py-1.5 px-2 rounded-md cursor-pointer transition-colors hover:bg-[var(--active-item)]  min-h-8">
           <FaSearch className="text-base min-w-5 text-center" />
           <span className="whitespace-nowrap overflow-hidden text-ellipsis">
             Search
@@ -97,11 +98,12 @@ const SearchModal = ({ pages }) => {
         </div>
       </DialogTrigger>
     <DialogContent className="bg-[var(--sidebar-bg)] border-0 rounded-lg p-0 max-w-lg w-full [&>button]:hidden">
+      <DialogTitle className="hidden"></DialogTitle> {/* gives error otherwise */}
       <div className="p-4">
 
         <div className="relative mb-4">
           <div className="relative flex items-center w-full bg-[var(--active-item)] rounded-md">
-          <FaSearch className="absolute left-3 text-gray-400" />
+          <FaSearch className="absolute left-3 " />
           <input
             type="text"
             placeholder={`Search or ask a question in ${currentWorkspace?.name || 'this workspace'}`}
@@ -119,7 +121,7 @@ const SearchModal = ({ pages }) => {
             return pageDate.toDateString() === yesterday.toDateString();
           }) && (
             <div className="mb-4">
-              <h3 className="text-sm text-gray-400 mb-2">Yesterday</h3>
+              <h3 className="text-sm  mb-2">Yesterday</h3>
               {displayedPages
                 .filter(page => {
                   const pageDate = new Date(page.updatedAt);
@@ -135,10 +137,10 @@ const SearchModal = ({ pages }) => {
                   >
                     <span className="text-2xl">{page.icon || '📄'}</span>
                     <div className="flex-1">
-                      <p className="text-gray-200 truncate">{page.title || 'Untitled'}</p>
-                      <p className="text-xs text-gray-400">{page.category || 'Uncategorized'}</p>
+                      <p className="truncate">{page.title || 'Untitled'}</p>
+                      <p className="text-xs ">{page.category || 'Uncategorized'}</p>
                     </div>
-                    <p className="text-xs text-gray-400">
+                    <p className="text-xs ">
                       {new Date(page.updatedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                     </p>
                   </div>
@@ -147,11 +149,11 @@ const SearchModal = ({ pages }) => {
           )}
 
           <div>
-            <h3 className="text-sm text-gray-400 mb-2">
+            <h3 className="text-sm  mb-2">
               {searchQuery ? 'Search Results' : 'Past week'}
             </h3>
             {displayedPages.length === 0 ? (
-              <p className="text-gray-400 text-sm">No matching pages found.</p>
+              <p className=" text-sm">No matching pages found.</p>
             ) : (
               displayedPages.map(page => {
                 const lowerQuery = searchQuery.toLowerCase();
@@ -177,16 +179,16 @@ const SearchModal = ({ pages }) => {
                     >
                     <span className="text-2xl">{page.icon || '📄'}</span>
                     <div className="flex-1">
-                      <p className="text-gray-200 truncate">{page.title || 'Untitled'}</p>
+                      <p className="truncate">{page.title || 'Untitled'}</p>
                       {searchQuery && snippet ? (
-                      <p className="text-xs text-gray-400 truncate">
+                      <p className="text-xs  truncate">
                         {highlightMatch(snippet, searchQuery)}
                       </p>
                       ) : (
-                      <p className="text-xs text-gray-400">{page.category || 'Uncategorized'}</p>
+                      <p className="text-xs ">{page.category || 'Uncategorized'}</p>
                       )}
                     </div>
-                    <p className="text-xs text-gray-400">
+                    <p className="text-xs ">
                       {new Date(page.updatedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                     </p>
                     </div>

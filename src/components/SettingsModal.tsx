@@ -33,7 +33,7 @@ const SettingsModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
         <div className="w-64 bg-[var(--sidebar-bg)] border-r border-[var(--sidebar-border)] p-4">
           <nav className="space-y-0">
             {Object.keys(sections).map((sectionName) => (
-              <div className="space-y-0.5 mb-4" key={sectionName}>
+              <div className="space-y-0.5 mb-4 text-[var(--muted-text)]" key={sectionName}>
                 <h3 className="text-sm font-bold text-[var(--muted-text)] mb-2">{sectionName}</h3>
                 {sections[sectionName].map((item) => (
                   <button

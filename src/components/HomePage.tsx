@@ -39,15 +39,15 @@ const HomePage = () => {
 
   return (
     <div className="min-h-screen animate-in fade-in slide-in-from-bottom-5 duration-300">
-      <h1 className="p-7 font-bold text-[#d4d4d4] text-4xl text-center capitalize">Welcome, {user?.username}</h1>
+      <h1 className="p-7 font-bold text-4xl text-center capitalize">Welcome, {user?.username}</h1>
       <div className="flex justify-center">
         <div className="w-full max-w-6xl">
-          <div className="text-sm px-5 py-3 text-gray-400 flex items-center">
+          <div className="text-sm px-5 py-3 flex items-center">
             <FaClock className="inline mr-2" />
             Jump back in
           </div>
           {displayedPages.length === 0 ? (
-            <p className="text-gray-400 px-5">No recently visited pages.</p>
+            <p className="px-5">No recently visited pages.</p>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 p-5">
               {displayedPages.map((page) => (
@@ -63,12 +63,12 @@ const HomePage = () => {
                     <span className="text-2xl">{page.icon || '📄'}</span>
                   </div>
                   <div className="pt-12 pb-4 px-4 mt-2">
-                    <h3 className="text-lg font-medium text-white truncate">
+                    <h3 className="text-lg font-medium  truncate">
                       {page.title || 'Untitled'}
                     </h3>
                     <div className="flex items-center space-x-2 mt-2">
-                      <UserProfilePicture user={user} className="w-5 h-5 rounded-full bg-gray-500 flex items-center justify-center text-white text-xs"/>
-                      <p className="text-gray-400 text-xs">
+                      <UserProfilePicture user={user} className="w-5 h-5 rounded-full bg-gray-500 flex items-center justify-center text-xs"/>
+                      <p className="text-xs">
                         {formatTimeSince(page.updatedAt)}
                       </p>
                     </div>

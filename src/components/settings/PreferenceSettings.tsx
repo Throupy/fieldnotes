@@ -6,8 +6,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
+import { useSettings } from "../../contexts/SettingsContext";
+
 
 const PreferenceSettings: React.FC = () => {
+
+  const { theme, setTheme } = useSettings();
+
   return (
     <div className="space-y-8">
       <div>
@@ -21,7 +26,7 @@ const PreferenceSettings: React.FC = () => {
               Customize how FieldNotes looks on your device.
             </p>
           </div>
-          <Select>
+          <Select value={theme} onValueChange={(value) => setTheme(value as 'light' | 'dark' | 'system')}>
             <SelectTrigger>
               <SelectValue placeholder="System"></SelectValue>
             </SelectTrigger>

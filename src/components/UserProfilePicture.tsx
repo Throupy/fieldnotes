@@ -25,7 +25,7 @@ const UserProfilePicture: React.FC<UserProfilePictureProps> = ({ user, className
         />
       ) : (
         <div 
-          className={`rounded-full bg-gray-300 flex items-center justify-center text-gray-700 ${className} text-sm w-[1.6em] h-[1.6em]`}
+          className={`rounded-full bg-gray-300 flex items-center justify-center ${className} text-sm w-[1.6em] h-[1.6em]`}
           {...props}
         >
           {firstLetter}

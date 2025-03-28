@@ -72,7 +72,7 @@ const AccountSettings: React.FC<AccountSettingsProps> = ({ user, updateProfile }
         <h3 className="text-lg font-semibold mb-4">Account</h3>
         <div className="flex items-center space-x-4">
           <div
-            className="w-16 h-16 rounded-full bg-gray-300 flex items-center justify-center text-gray-600 text-2xl cursor-pointer"
+            className="w-16 h-16 rounded-full bg-gray-300 flex items-center justify-center  text-2xl cursor-pointer"
             onClick={handleImageClick}
           >
             <UserProfilePicture user={user} />
@@ -148,7 +148,7 @@ const AccountSettings: React.FC<AccountSettingsProps> = ({ user, updateProfile }
                 >
                   Cancel
                 </button>
-                <button onClick={handleEmailUpdate} className="px-4 py-2 bg-blue-500 text-white rounded-md">Save</button>
+                <button onClick={handleEmailUpdate} className="px-4 py-2 bg-blue-500 rounded-md">Save</button>
               </div>
             </div>
           </div>
@@ -185,7 +185,7 @@ const AccountSettings: React.FC<AccountSettingsProps> = ({ user, updateProfile }
                 >
                   Cancel
                 </button>
-                <button onClick={handlePasswordUpdate} className="px-4 py-2 bg-blue-500 text-white rounded-md">Save</button>
+                <button onClick={handlePasswordUpdate} className="px-4 py-2 bg-blue-500 rounded-md">Save</button>
               </div>
             </div>
           </div>
