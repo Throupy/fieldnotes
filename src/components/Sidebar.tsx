@@ -8,19 +8,21 @@ import {
   FaHome,
   FaCog,
 } from "react-icons/fa";
+import { SearchIcon, HouseIcon, SettingsIcon, ChevronRightIcon, ChevronDownIcon, TrashIcon, PlusIcon } from "lucide-react";
 import {
   ContextMenu,
   ContextMenuContent,
   ContextMenuItem,
   ContextMenuTrigger,
 } from "../components/ui/context-menu";
-
 import SearchModal from "../components/SearchModal";
 import { usePages } from "../contexts/PageContext";
 import WorkspaceSwitcher from "./WorkspaceSwitcher";
 import { useAuth } from "../contexts/AuthContext";
+import { Dialog, DialogTrigger } from "./ui/dialog";
+import SettingsModal from "./SettingsModal";
 
-const Sidebar = ({ onSettingsClick }: { onSettingsClick: () => void }) => {
+const Sidebar = () => {  // Removed unused onSettingsClick prop
   const { pages, setSelectedPageId, addPage, deletePageInContext } = usePages();
   const [expanded, setExpanded] = useState<{ [key: string]: boolean }>({});
   const [sidebarWidth, setSidebarWidth] = useState(250);
@@ -28,10 +30,9 @@ const Sidebar = ({ onSettingsClick }: { onSettingsClick: () => void }) => {
   const { currentWorkspace } = useAuth();
   const sidebarRef = useRef<HTMLDivElement | null>(null);
 
-  // Handle sidebar resizing
+  // Handle sidebar resizing (unchanged)
   const startResizing = useCallback(() => setIsResizing(true), []);
   const stopResizing = useCallback(() => setIsResizing(false), []);
-
   const resize = useCallback(
     (mouseMoveEvent: MouseEvent) => {
       if (isResizing && sidebarRef.current) {
@@ -105,9 +106,9 @@ const Sidebar = ({ onSettingsClick }: { onSettingsClick: () => void }) => {
                           {page.icon}
                         </span>
                         {isExpanded ? (
-                          <FaChevronDown className="absolute flex items-center justify-center transition-opacity duration-200 opacity-0 group-hover:opacity-100" />
+                          <ChevronDownIcon className="w-4 h-4 absolute flex items-center justify-center transition-opacity duration-200 opacity-0 group-hover:opacity-100" />
                         ) : (
-                          <FaChevronRight className="absolute flex items-center justify-center transition-opacity duration-200 opacity-0 group-hover:opacity-100" />
+                          <ChevronRightIcon className="w-4 h-4 absolute flex items-center justify-center transition-opacity duration-200 opacity-0 group-hover:opacity-100" />
                         )}
                       </>
                     ) : (
@@ -126,14 +127,14 @@ const Sidebar = ({ onSettingsClick }: { onSettingsClick: () => void }) => {
                   className="flex items-center gap-2 hover:bg-[var(--active-item)]"
                   onClick={() => handleAddPage(page._id)}
                 >
-                  <FaPlus className="w-4 h-4" />
+                  <PlusIcon className="w-4 h-4" strokeWidth={2} />
                   Add Page
                 </ContextMenuItem>
                 <ContextMenuItem
                   className="flex items-center gap-2 text-red-500 hover:bg-[var(--active-item)]"
                   onClick={() => handleDeletePage(page._id)}
                 >
-                  <FaTrash className="w-4 h-4" />
+                  <TrashIcon className="text-red-500 w-4 h-4" strokeWidth={2} />
                   Delete Page
                 </ContextMenuItem>
               </ContextMenuContent>
@@ -161,38 +162,44 @@ const Sidebar = ({ onSettingsClick }: { onSettingsClick: () => void }) => {
       <div className="relative bg-[var(--sidebar-bg)] h-full overflow-y-auto no-scrollbar overflow-x-hidden transition-all duration-200 ease border-r border-[var(--sidebar-border)]">
         <div className="flex flex-col gap-0.5 p-1 text-sm">
           <WorkspaceSwitcher />
-          <SearchModal pages={pages}/>
+          <Dialog>
+            <DialogTrigger asChild>
+              <div className="flex items-center gap-2 py-1.5 px-2 rounded-md cursor-pointer transition-colors hover:bg-[var(--active-item)] min-h-8">
+                <SearchIcon className="w-5 h-5" strokeWidth={2} />
+                <span>Search</span>
+              </div>
+            </DialogTrigger>
+            <SearchModal pages={pages} />
+          </Dialog>
           <div
             className="flex items-center gap-2 py-1.5 px-2 rounded-md cursor-pointer transition-colors hover:bg-[var(--active-item)] min-h-8"
             onClick={() => setSelectedPageId(null)}
-            >
-            <FaHome className="text-base min-w-5 text-center" />
+          >
+            <HouseIcon className="w-5 h-5"  strokeWidth={2} />
             <span className="whitespace-nowrap overflow-hidden text-ellipsis">
               Home
             </span>
           </div>
-          <div
-            className="flex items-center gap-2 py-1.5 px-2 rounded-md cursor-pointer transition-colors hover:bg-[var(--active-item)] min-h-8"
-            onClick={onSettingsClick}
-          >
-            <FaCog className="text-base min-w-5 text-center" />
-            <span className="whitespace-nowrap overflow-hidden text-ellipsis">
-              Settings
-            </span>
-          </div>
+          <Dialog>
+            <DialogTrigger asChild>
+              <div className="flex items-center gap-2 py-1.5 px-2 rounded-md cursor-pointer transition-colors hover:bg-[var(--active-item)] min-h-8">
+                <SettingsIcon className="w-5 h-5" strokeWidth={2} />
+                <span>Settings</span>
+              </div>
+            </DialogTrigger>
+            <SettingsModal />
+          </Dialog>
         </div>
         <div className="h-px bg-[var(--sidebar-border)]"></div>
-
         <div className="flex justify-between items-center p-2">
           <span className="text-xs">Workspace Pages ({pages.length})</span>
-          <FaPlus
-            className="cursor-pointer transition-colors"
+          <PlusIcon
+            strokeWidth={2}
+            className="cursor-pointer transition-colors h-5 w-5"
             onClick={() => addPage("Untitled Page", null)}
           />
         </div>
-
         <div className="px-3 py-1.5">{renderPages(null)}</div>
-
         <div
           className="absolute top-0 right-[-5px] w-2.5 h-full cursor-ew-resize bg-transparent z-10 hover:bg-white/20 active:bg-white/30"
           onMouseDown={startResizing}

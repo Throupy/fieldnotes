@@ -72,7 +72,7 @@ const AccountSettings: React.FC<AccountSettingsProps> = ({ user, updateProfile }
         <h3 className="text-lg font-semibold mb-4">Account</h3>
         <div className="flex items-center space-x-4">
           <div
-            className="w-16 h-16 rounded-full bg-gray-300 flex items-center justify-center  text-2xl cursor-pointer"
+            className="w-16 h-16 rounded-full flex items-center justify-center  text-2xl cursor-pointer"
             onClick={handleImageClick}
           >
             <UserProfilePicture user={user} />
@@ -101,7 +101,7 @@ const AccountSettings: React.FC<AccountSettingsProps> = ({ user, updateProfile }
             </div>
             <button
               onClick={() => setShowEmailModal(true)}
-              className="bg-[var(--bg-color)] border border-[var(--sidebar-border)] text-[var(--text-color)] py-1 px-3 rounded-md text-sm"
+              className="bg-[var(--bg-color)] shadow-md border border-[var(--sidebar-border)] text-[var(--text-color)] py-1 px-3 rounded-md text-sm"
             >
               Change email
             </button>
@@ -116,7 +116,7 @@ const AccountSettings: React.FC<AccountSettingsProps> = ({ user, updateProfile }
             </div>
             <button 
               onClick={() => setShowPasswordModal(true)}
-              className="bg-[var(--bg-color)] border border-[var(--sidebar-border)] text-[var(--text-color)] py-1 px-3 rounded-md text-sm"
+              className="bg-[var(--bg-color)] shadow-md border border-[var(--sidebar-border)] text-[var(--text-color)] py-1 px-3 rounded-md text-sm"
             >
               Change password
             </button>

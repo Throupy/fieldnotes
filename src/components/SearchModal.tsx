@@ -88,16 +88,7 @@ const SearchModal = ({ pages }) => {
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        <div className="flex items-center gap-2 py-1.5 px-2 rounded-md cursor-pointer transition-colors hover:bg-[var(--active-item)]  min-h-8">
-          <FaSearch className="text-base min-w-5 text-center" />
-          <span className="whitespace-nowrap overflow-hidden text-ellipsis">
-            Search
-          </span>
-        </div>
-      </DialogTrigger>
-    <DialogContent className="bg-[var(--sidebar-bg)] border-0 rounded-lg p-0 max-w-lg w-full [&>button]:hidden">
+    <DialogContent className="bg-[var(--sidebar-bg)] shadow-lg border-0 rounded-xl p-0 max-w-lg w-full [&>button]:hidden">
       <DialogTitle className="hidden"></DialogTitle> {/* gives error otherwise */}
       <div className="p-4">
 
@@ -198,7 +189,6 @@ const SearchModal = ({ pages }) => {
           </div>
         </div>
     </DialogContent>
-  </Dialog>
   )
 }
 

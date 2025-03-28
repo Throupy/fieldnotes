@@ -30,7 +30,7 @@ const WorkspaceSwitcher: React.FC = () => {
           </button>
         </PopoverTrigger>
 
-        <PopoverContent className="text-[var(--muted-text)] w-72 ml-2 p-2 rounded-lg shadow-lg bg-[var(--sidebar-bg)] border border-stone-700">
+        <PopoverContent className="text-[var(--muted-text)] w-72 ml-2 p-2 rounded-lg shadow-2xl bg-[var(--sidebar-bg)]">
           <div className="flex items-center justify-between px-2 py-1 rounded-md">
             <div className="flex items-center">
               <div className="w-6 h-6 rounded-sm mr-2 flex items-center justify-center">
@@ -46,17 +46,17 @@ const WorkspaceSwitcher: React.FC = () => {
           </div>
           <div className="mb-2 flex items-center justify-between px-2 py-1 rounded-md">
             <div className="flex items-center space-x-2">
-              <button className="hover:bg-[var(--active-item)] rounded-md py-1 px-2 transition-all flex items-center space-x-1 border border-gray-600">
+              <button className="hover:bg-[var(--active-item)] rounded-md py-1 px-2 transition-all flex items-center space-x-1 border border-[var(--sidebar-divider)]">
                 <FaGears className="w-4 h-4 " />
                 <span className="text-xs ">Settings</span>
               </button>
-              <button className="hover:bg-[var(--active-item)] rounded-md py-1 px-2 transition-all flex items-center space-x-1 border border-gray-600">
+              <button className="hover:bg-[var(--active-item)] rounded-md py-1 px-2 transition-all flex items-center space-x-1 border border-[var(--sidebar-divider)]">
                 <FaUserPlus className="w-4 h-4 " />
                 <span className="text-xs ">Invite</span>
               </button>
             </div>
           </div>
-          <div className="h-px bg-gray-600 my-1"></div>
+          <div className="h-px bg-[var(--sidebar-divider)] my-1"></div>
           {workspaces.length === 0 ? (
             <p className="text-center  text-sm">No workspaces found</p>
           ) : (
@@ -76,8 +76,7 @@ const WorkspaceSwitcher: React.FC = () => {
               ))}
             </ul>
           )}
-          <div className="h-px bg-gray-600 my-1"></div>
-          <div className="text-sm rounded-lg shadow-lg">
+          <div className="h-px bg-[var(--sidebar-divider)] my-1"></div>
             <ul className="flex flex-col">
               <li>
                 <button
@@ -101,7 +100,6 @@ const WorkspaceSwitcher: React.FC = () => {
                 </button>
               </li>
             </ul>
-          </div>
         </PopoverContent>
       </Popover>
 
