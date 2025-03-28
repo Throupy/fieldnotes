@@ -102,7 +102,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           id,
           name: idToName(id),
         }));
-        console.log("login successful, setting user to ", username, workspaceIds, profilePicture)
         setUser({
           username, email, workspaceIds, profilePicture
         })

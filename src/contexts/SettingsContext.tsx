@@ -20,14 +20,14 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   useEffect(() => {
     localStorage.setItem('theme', theme)
 
-    if (theme == 'system') {
+    if (theme === 'system') {
       const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches
       document.documentElement.dataset.theme = isDark ? 'dark' : 'light'
     } else {
       document.documentElement.dataset.theme = theme
     }
 
-    document.documentElement.setAttribute('data-theme', theme)
+    document.documentElement.setAttribute('data-theme', document.documentElement.dataset.theme)
   }, [theme])
 
   const setTheme = (t: Theme) => setThemeState(t);

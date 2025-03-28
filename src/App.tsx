@@ -8,7 +8,6 @@ import SettingsModal from "./components/SettingsModal";
 
 const App = () => {
   const { user, logout } = useAuth();
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   useEffect(() => {
     const handleZoom = (e: KeyboardEvent) => {
@@ -33,11 +32,10 @@ const App = () => {
   return user ? (
     <PageProvider>
       <div className="app-container">
-        <Sidebar onSettingsClick={() => setIsSettingsOpen(true)} />
+        <Sidebar/>
         <div className="page-editor">
           <PageEditor />
         </div>
-        {isSettingsOpen && <SettingsModal onClose={() => setIsSettingsOpen(false)} />}
       </div>
     </PageProvider>
   ) : (
