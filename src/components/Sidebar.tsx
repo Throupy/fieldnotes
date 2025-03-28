@@ -1,13 +1,4 @@
 import { useEffect, useState, useRef, useCallback } from "react";
-import {
-  FaPlus,
-  FaTrash,
-  FaChevronRight,
-  FaChevronDown,
-  FaSearch,
-  FaHome,
-  FaCog,
-} from "react-icons/fa";
 import { SearchIcon, HouseIcon, SettingsIcon, ChevronRightIcon, ChevronDownIcon, TrashIcon, PlusIcon } from "lucide-react";
 import {
   ContextMenu,
@@ -22,7 +13,7 @@ import { useAuth } from "../contexts/AuthContext";
 import { Dialog, DialogTrigger } from "./ui/dialog";
 import SettingsModal from "./SettingsModal";
 
-const Sidebar = () => {  // Removed unused onSettingsClick prop
+const Sidebar = () => {
   const { pages, setSelectedPageId, addPage, deletePageInContext } = usePages();
   const [expanded, setExpanded] = useState<{ [key: string]: boolean }>({});
   const [sidebarWidth, setSidebarWidth] = useState(250);
@@ -30,7 +21,6 @@ const Sidebar = () => {  // Removed unused onSettingsClick prop
   const { currentWorkspace } = useAuth();
   const sidebarRef = useRef<HTMLDivElement | null>(null);
 
-  // Handle sidebar resizing (unchanged)
   const startResizing = useCallback(() => setIsResizing(true), []);
   const stopResizing = useCallback(() => setIsResizing(false), []);
   const resize = useCallback(
