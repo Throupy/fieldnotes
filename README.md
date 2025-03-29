@@ -22,3 +22,6 @@
 - [X] Title update causes couchDB sync with every char entered
 - [X] Context menu improvements - text wrapping and maybe use shadcn popover?
 - [X] Disable spellcheck in code blocks
+
+
+Update README to reflect kanban 
