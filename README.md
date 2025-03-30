@@ -24,4 +24,4 @@
 - [X] Disable spellcheck in code blocks
 
 
-Update README to reflect kanban 
+Update README to reflect kanban .
