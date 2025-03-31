@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 
 const Login = () => {
-  const { login, register } = useAuth();
+  const { login, register, authUrl, setAuthUrl } = useAuth();
+  const [localAuthUrl, setLocalAuthUrl] = useState(authUrl);
   const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -12,6 +13,7 @@ const Login = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setAuthUrl(localAuthUrl);
     const success = isRegister
       ? await register({username, password, email, profilePic})
       : await login(username, password);
@@ -33,6 +35,20 @@ const Login = () => {
         )}
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          <div>
+            <label className="block text-sm font-medium mb-2 text-[var(--text-color)]">
+              Auth Server URL
+            </label>
+            <input
+              type="text"
+              spellCheck="false"
+              placeholder="e.g. http://your-auth-server:4000"
+              value={localAuthUrl}
+              onChange={(e) => setLocalAuthUrl(e.target.value)}
+              className="w-full p-3 bg-[var(--sidebar-bg)] border border-[var(--sidebar-border)] rounded-md text-[var(--text-color)] placeholder-gray-400 focus:ring-1 focus:ring-[var(--primary-button)] focus:border-[var(--primary-button)] transition-all"
+            />
+          </div>
+
           {isRegister && (
             <div>
               <label className="block text-sm font-medium mb-2 text-[var(--text-color)]">

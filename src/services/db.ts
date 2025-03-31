@@ -6,6 +6,18 @@ PouchDB.plugin(PouchAuth);
 let currentWorkspaceId: string | null = null;
 let pagesDB: PouchDB.Database | null = null;
 let syncHandler: PouchDB.Replication.Sync<{}> | null = null;
+let dbUrl: string = localStorage.getItem('dbUrl') || 'http://localhost:5984';
+
+export const setDbUrl = (url: string) => {
+  if (!url.match(/^https?:\/\//)) url = `http://${url}`;
+  dbUrl = url.endsWith('/') ? url.slice(0, -1) : url;
+  localStorage.setItem('dbUrl', dbUrl);
+  if (currentWorkspaceId) {
+    setWorkspace(currentWorkspaceId);
+  }
+};
+
+export const getDbUrl = () => dbUrl; // getter for settings
 
 export const setWorkspace = async (workspaceId: string) => {
     currentWorkspaceId = workspaceId;
@@ -17,7 +29,7 @@ export const setWorkspace = async (workspaceId: string) => {
 
     // remote DB URI pointing to couchdb
     const remoteDbName = workspaceId;
-    const remoteUrl = `http://localhost:5984/${remoteDbName}`;
+    const remoteUrl = `${dbUrl}/${remoteDbName}`;
     console.log('Remote URL:', remoteUrl);
 
     // cancel any existing sync handler (prevent conflcits)

@@ -31,12 +31,14 @@ type AuthContextType = {
   user: User | null
   workspaces: Workspace[]
   currentWorkspace: Workspace | null
+  authUrl: string
   setCurrentWorkspace: (workspace: Workspace) => void
   login: (username: string, password: string) => Promise<boolean>
   logout: () => void
   register: ({email, username, password, profilePic}: RegisterInput) => Promise<boolean>
   createWorkspace: (name: string) => Promise<boolean>;
   updateProfile: (updates: UpdateProfileInput) => Promise<boolean>
+  setAuthUrl: (url: string) => void
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -45,12 +47,24 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null)
   const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
   const [currentWorkspace, setCurrentWorkspace] = useState<Workspace | null>(null);
+  const [authUrl, setAuthUrl] = useState(() => {
+    // Load from localStorage, fallback to a default
+    return localStorage.getItem('authUrl') || 'http://localhost:4000';
+  });
 
   console.log("AuthProvider called")
   
+  const updateAuthUrl = (url: string) => {
+    if (!url.match(/^https?:\/\//)) {
+      url = `http://${url}`;
+    }
+    localStorage.setItem('authUrl', url);
+    setAuthUrl(url);
+  };
+
   useEffect(() => {
     // Check if user is already logged in via cookie
-    fetch('http://localhost:4000/login', { credentials: 'include' })
+    fetch(`${authUrl}/login`, { credentials: 'include' })
         .then(res => res.ok ? res.json() : Promise.reject())
         .then(data => {
             setUser({
@@ -89,7 +103,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   
   const login = async (_username: string, password: string) => {
     try {
-        const response = await fetch('http://localhost:4000/login', {
+        const response = await fetch(`${authUrl}/login`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username: _username, password }),
@@ -118,7 +132,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const logout = async () => {
-    await fetch('http://localhost:4000/logout', { credentials: 'include' });
+    await fetch(`${authUrl}/logout`, { credentials: 'include' });
     setUser(null);
     setWorkspaces([]);
     setCurrentWorkspace(null);
@@ -126,7 +140,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const createWorkspace = async(name: string) => {
     try {
-      const response = await fetch('http://localhost:4000/workspaces', {
+      const response = await fetch(`${authUrl}/workspaces`, {
         method: "POST",
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ workspaceName: name }),
@@ -157,7 +171,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       formData.append('profilePic', profilePic)
     }
 
-    const response = await fetch('http://localhost:4000/register', {
+    const response = await fetch(`${authUrl}/register`, {
         method: 'POST',
         body: formData,
         credentials: 'include'
@@ -177,7 +191,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       }
       if (profilePic) formData.append('profilePic', profilePic)
 
-      const response = await fetch('http://localhost:4000/update-profile', {
+      const response = await fetch(`${authUrl}/update-profile`, {
           method: 'POST',
           body: formData,
           credentials: 'include'
@@ -200,7 +214,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <AuthContext.Provider
-      value={{ user, workspaces, currentWorkspace, setCurrentWorkspace, login, logout, register, createWorkspace, updateProfile }}
+      value={{ user, workspaces, currentWorkspace, setCurrentWorkspace, login, logout, register, createWorkspace, updateProfile, authUrl, setAuthUrl: updateAuthUrl }}
     >
       {children}
     </AuthContext.Provider>

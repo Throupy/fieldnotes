@@ -11,6 +11,7 @@ import {
 import { useAuth } from "../contexts/AuthContext";
 import AccountSettings from "./settings/AccountSettings";
 import PreferenceSettings from "./settings/PreferenceSettings";
+import ConnectionSettings from "./settings/ConnectionSettings";
 import { DialogContent } from "../components/ui/dialog";
 
 const SettingsModal = () => {
@@ -73,18 +74,7 @@ const SettingsModal = () => {
           )}
           {activeSection === "Preferences" && <PreferenceSettings />}
           {activeSection === "Connection" && (
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                Server to Connect
-              </label>
-              <input
-                type="text"
-                value={serverUrl}
-                onChange={(e) => setServerUrl(e.target.value)}
-                placeholder="Enter server URL"
-                className="block w-full bg-[var(--bg-color)] border-[var(--sidebar-border)] rounded-md shadow-sm focus:ring-[var(--primary-button)] focus:border-[var(--primary-button)] text-[var(--text-color)] sm:text-sm p-2"
-              />
-            </div>
+            <ConnectionSettings />
           )}
         </div>
       </div>
