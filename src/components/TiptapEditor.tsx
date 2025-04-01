@@ -1,5 +1,6 @@
 import { useEffect, memo, useCallback, useRef } from "react";
 import { EditorContent, useEditor } from "@tiptap/react";
+import { GripVerticalIcon } from "lucide-react";
 import { common, createLowlight } from "lowlight";
 import StarterKit from "@tiptap/starter-kit";
 import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
@@ -16,6 +17,7 @@ import Underline from "@tiptap/extension-underline";
 import FileHandler from "@tiptap-pro/extension-file-handler";
 import { ImageBlock } from "../extensions/ImageBlock";
 import ImageBlockMenu from "../components/ImageBlockMenu";
+import DragHandle from "@tiptap-pro/extension-drag-handle-react";
 
 interface TiptapEditorProps {
   content: string;
@@ -96,6 +98,9 @@ const TiptapEditor = ({ content, onUpdate }: TiptapEditorProps) => {
 
   return (
     <div ref={menuContainerRef} className="relative w-full">
+      <DragHandle editor={editor}>
+        <GripVerticalIcon strokeWidth={1} opacity={0.4}/>
+      </DragHandle>
       <EditorContent editor={editor} className="editor-content" />
       {editor && <ImageBlockMenu editor={editor} appendTo={menuContainerRef} />}
     </div>

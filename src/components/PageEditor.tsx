@@ -1,10 +1,10 @@
 import { useEffect, useState, useCallback, useMemo, useRef } from "react";
 import { BookOpenIcon, LockIcon, LockKeyholeIcon, MessageSquareIcon, MoreHorizontalIcon, StarIcon } from "lucide-react"
+import DragHandle from '@tiptap-pro/extension-drag-handle-react'
 import { usePages } from "../contexts/PageContext";
 import TitleEditor from "../components/TitleEditor";
 import TiptapEditor from "../components/TiptapEditor";
 import HomePage from "./HomePage";
-import React from "react";
 import PageEditorHeader from "./PageEditorHeader";
 
 function debounce(func, wait) {
