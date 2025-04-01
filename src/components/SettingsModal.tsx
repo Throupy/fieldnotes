@@ -13,6 +13,7 @@ import AccountSettings from "./settings/AccountSettings";
 import PreferenceSettings from "./settings/PreferenceSettings";
 import ConnectionSettings from "./settings/ConnectionSettings";
 import { DialogContent } from "../components/ui/dialog";
+import PeopleSettings from "./settings/PeopleSettings";
 
 const SettingsModal = () => {
   const [activeSection, setActiveSection] = useState("User");
@@ -73,9 +74,8 @@ const SettingsModal = () => {
             <AccountSettings user={user} updateProfile={updateProfile} />
           )}
           {activeSection === "Preferences" && <PreferenceSettings />}
-          {activeSection === "Connection" && (
-            <ConnectionSettings />
-          )}
+          {activeSection === "Connection" && <ConnectionSettings />}
+          {activeSection === "People" && <PeopleSettings />}
         </div>
       </div>
     </DialogContent>

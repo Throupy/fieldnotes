@@ -23,18 +23,26 @@ export const PageProvider = ({ children }: { children: ReactNode }) => {
   const [lastWorkspaceId, setLastWorkspaceId] = useState<string | null>(null);
 
   const fetchPages = useCallback(async () => {
+    if (!currentWorkspace) return;
     const updatedPages = await getPages();
+    console.log(updatedPages)
     setPages(updatedPages);
-  }, []);
+
+    if (updatedPages.length === 0) {
+      setSelectedPageId(null);
+    } else if (!updatedPages.some(page => page._id === selectedPageId)) {
+      setSelectedPageId(updatedPages[0]._id);
+    }
+  }, [currentWorkspace, selectedPageId]);
 
   // set up the workspace and fetch pages when the currentWorkspace changes
   useEffect(() => {
-    if (currentWorkspace && currentWorkspace.id !== lastWorkspaceId) {
-      setWorkspace(currentWorkspace.id);
-      setLastWorkspaceId(currentWorkspace.id);
+    if (currentWorkspace && currentWorkspace.workspaceId !== lastWorkspaceId) {
+      setWorkspace(currentWorkspace.workspaceId);
+      setLastWorkspaceId(currentWorkspace.workspaceId);
       fetchPages();
     }
-  }, [currentWorkspace, fetchPages]);;
+  }, [currentWorkspace, fetchPages]);
 
   // updates a single page in app context and local DB (synced to remote)
   const updatePageInContext = useCallback(async (pageId: string, updates: Partial<Page>) => {

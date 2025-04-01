@@ -1,9 +1,17 @@
 import React, { createContext, useContext, useState, useEffect } from 'react'
 import { setWorkspace } from '../services/db'
 
-type Workspace = {
-  id: string,
-  name?: string // got from backend, or derived from id
+type OwnedWorkspace = {
+  workspaceId: string,
+  ownerUsername: string,
+  memberCount: number,
+  name?: string // derive from id or get from backend
+}
+
+type SharedWorkspace = {
+  workspaceId: string,
+  ownerUsername: string,
+  name?: string // derive from id or get from backend
 }
 
 type RegisterInput = {
@@ -14,11 +22,12 @@ type RegisterInput = {
 }
 
 type User = {
-  username: string,
-  email: string,
-  workspaceIds: string[],
-  profilePicture?: string
-}
+  username: string;
+  email: string;
+  ownedWorkspaces: OwnedWorkspace[];
+  sharedWorkspaces: SharedWorkspace[];
+  profilePicture?: string;
+};
 
 type UpdateProfileInput = {
   email?: string;
@@ -29,10 +38,11 @@ type UpdateProfileInput = {
 
 type AuthContextType = {
   user: User | null
-  workspaces: Workspace[]
-  currentWorkspace: Workspace | null
+  ownedWorkspaces: OwnedWorkspace[],
+  sharedWorkspaces: SharedWorkspace[],
+  currentWorkspace: OwnedWorkspace | SharedWorkspace | null
   authUrl: string
-  setCurrentWorkspace: (workspace: Workspace) => void
+  setCurrentWorkspace: (workspace: OwnedWorkspace | SharedWorkspace) => void
   login: (username: string, password: string) => Promise<boolean>
   logout: () => void
   register: ({email, username, password, profilePic}: RegisterInput) => Promise<boolean>
@@ -45,8 +55,9 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null)
-  const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
-  const [currentWorkspace, setCurrentWorkspace] = useState<Workspace | null>(null);
+  const [ownedWorkspaces, setOwnedWorkspaces] = useState<OwnedWorkspace[]>([])
+  const [sharedWorkspaces, setSharedWorkspaces] = useState<SharedWorkspace[]>([])
+  const [currentWorkspace, setCurrentWorkspace] = useState<OwnedWorkspace | SharedWorkspace | null>(null);
   const [authUrl, setAuthUrl] = useState(() => {
     // Load from localStorage, fallback to a default
     return localStorage.getItem('authUrl') || 'http://localhost:4000';
@@ -67,30 +78,37 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     fetch(`${authUrl}/login`, { credentials: 'include' })
         .then(res => res.ok ? res.json() : Promise.reject())
         .then(data => {
-            setUser({
-              username: data.name,
-              email: data.email,
-              workspaceIds: data.workspaceIds,
-              profilePicture: data.profilePicture
-            })
-            const workspaceList = data.workspaceIds.map((id: string) => ({
-              id,
-              name: idToName(id), // Derive name if backend doesn't provide it
-            }));
-            setWorkspaces(workspaceList);
-            if (data.workspaceIds?.length > 0) {
-                setCurrentWorkspace(workspaceList[0]);
-                // dont set workspace here - let pagecontext handle it.
-                //console.log("Calling setWorkspace from useEffect in AuthProvider, setting value to ", data.workspaceIds[0]);
-                //setWorkspace(data.workspaceIds[0]);
-            }
+          const owned = (data.ownedWorkspaces || []).map((ws: OwnedWorkspace) => ({
+            ...WSH,
+            name: idToName(ws.workspaceId) // Derive name if backend doesn't provide it
+          }))
+          const shared = (data.sharedWorkspaces || []).map((ws: SharedWorkspace) => ({
+            ...ws,
+            name: idToName(ws.workspaceId) // Derive name if backend doesn't provide it
+          }))
+          setUser({
+            username: data.name,
+            email: data.email,
+            ownedWorkspaces: owned,
+            sharedWorkspaces: shared,
+            profilePicture: data.profilePicture
+          })
+          setOwnedWorkspaces(owned)
+          setSharedWorkspaces(shared)
+
+          if (owned.length > 0) {
+            setCurrentWorkspace(owned[0])
+          } else if (shared.length > 0) {
+            setCurrentWorkspace(shared[0])
+          }
         })
         .catch(() => {
             setUser(null);
-            setWorkspaces([]);
+            setOwnedWorkspaces([]);
+            setSharedWorkspaces([])
             setCurrentWorkspace(null);
         });
-  }, []);
+  }, [authUrl]);
 
   const idToName = (id: string): string => {
     // workspace id -> name
@@ -111,18 +129,35 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         });
 
         if (!response.ok) throw new Error('Login failed');
-        const { username, email, workspaceIds, profilePicture } = await response.json();
-        const workspaceList = workspaceIds.map((id: string) => ({
-          id,
-          name: idToName(id),
-        }));
-        setUser({
-          username, email, workspaceIds, profilePicture
-        })
+        const {
+          username: userName,
+          email,
+          ownedWorkspaces: owned,
+          sharedWorkspaces: shared,
+          profilePicture
+        } = await response.json();
 
-        setWorkspaces(workspaceList);
-        if (workspaceList.length > 0) {
-          setCurrentWorkspace(workspaceList[0]);
+        const ownedList = owned.map((ws: OwnedWorkspace) => ({
+          ...ws,
+          name: idToName(ws.workspaceId) // Derive name if backend doesn't provide it
+        }))
+        const sharedList = shared.map((ws: SharedWorkspace) => ({
+          ...ws,
+          name: idToName(ws.workspaceId) // Derive name if backend doesn't provide it
+        }))
+        setUser({
+          username: userName,
+          email,
+          ownedWorkspaces: ownedList,
+          sharedWorkspaces: sharedList,
+          profilePicture
+        })
+        setOwnedWorkspaces(ownedList)
+        setSharedWorkspaces(sharedList)
+        if (ownedList.length > 0) {
+          setCurrentWorkspace(ownedList[0])
+        } else if (sharedList.length > 0) {
+          setCurrentWorkspace(sharedList[0])
         }
         return true;
     } catch (err) {
@@ -134,7 +169,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const logout = async () => {
     await fetch(`${authUrl}/logout`, { credentials: 'include' });
     setUser(null);
-    setWorkspaces([]);
+    setOwnedWorkspaces([])
+    setSharedWorkspaces([])
     setCurrentWorkspace(null);
   };
 
@@ -151,10 +187,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         const errorData = await response.json();
         throw new Error(errorData.error || 'Workspace creation failed');
       }
-      const { workspaceId, workspaceName } = await response.json();
-      const newWorkspace = { id: workspaceId, name: workspaceName };
-      setWorkspaces((prev) => [...prev, newWorkspace]);
-      setCurrentWorkspace(newWorkspace);
+
+      const { workspace } = await response.json()
+      const newWorkspace: OwnedWorkspace = {
+        ...workspace,
+        name: name
+      }
+      setOwnedWorkspaces(prev => [...prev, newWorkspace])
+      setUser(prev => prev ? { ...prev, ownedWorkspaces: [...prev.ownedWorkspaces, newWorkspace] } : prev)
+      setCurrentWorkspace(newWorkspace)
       return true;
     } catch (err) {
       console.error("error creation workspace", err)
@@ -214,7 +255,20 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <AuthContext.Provider
-      value={{ user, workspaces, currentWorkspace, setCurrentWorkspace, login, logout, register, createWorkspace, updateProfile, authUrl, setAuthUrl: updateAuthUrl }}
+    value={{
+      user,
+      ownedWorkspaces,
+      sharedWorkspaces,
+      currentWorkspace,
+      setCurrentWorkspace,
+      login,
+      logout,
+      register,
+      createWorkspace,
+      updateProfile,
+      authUrl,
+      setAuthUrl: updateAuthUrl,
+    }}
     >
       {children}
     </AuthContext.Provider>
