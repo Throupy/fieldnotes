@@ -30,7 +30,7 @@ const WorkspaceSwitcher: React.FC = () => {
           </button>
         </PopoverTrigger>
 
-        <PopoverContent className="text-[var(--muted-text)] w-72 ml-2 p-2 rounded-lg shadow-2xl bg-[var(--sidebar-bg)]">
+        <PopoverContent className="text-[var(--muted-text)] w-72 ml-2 p-2 rounded-lg shadow-2xl border border-[var(--sidebar-divider)] bg-[var(--sidebar-bg)]">
           <div className="flex items-center justify-between px-2 py-1 rounded-md">
             <div className="flex items-center">
               <div className="w-6 h-6 rounded-sm mr-2 flex items-center justify-center">

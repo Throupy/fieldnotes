@@ -32,7 +32,7 @@ const ConnectionSettings: React.FC = () => {
             value={localAuthUrl}
             onChange={(e) => setLocalAuthUrl(e.target.value)}
             onBlur={handleAuthUrlBlur}
-            className="w-full p-3 bg-[var(--sidebar-bg)] border border-[var(--sidebar-border)] rounded-md text-[var(--text-color)] placeholder-gray-400 focus:ring-1 focus:ring-[var(--primary-button)] focus:border-[var(--primary-button)] transition-all"
+            className="w-full p-3 bg-[var(--sidebar-bg)] border border-[var(--muted-text)] rounded-md text-[var(--text-color)] focus:ring-1 focus:ring-[var(--primary-button)] focus:border-[var(--primary-button)] transition-all"
           />
           <p className="text-sm text-[var(--muted-text)] mt-1">
             The URL of your self-hosted authentication server.
@@ -51,7 +51,7 @@ const ConnectionSettings: React.FC = () => {
             value={localDbUrl}
             onChange={(e) => setLocalDbUrl(e.target.value)}
             onBlur={handleDbUrlBlur}
-            className="w-full p-3 bg-[var(--sidebar-bg)] border border-[var(--sidebar-border)] rounded-md text-[var(--text-color)] placeholder-gray-400 focus:ring-1 focus:ring-[var(--primary-button)] focus:border-[var(--primary-button)] transition-all"
+            className="w-full p-3 bg-[var(--sidebar-bg)] border border-[var(--muted-text)]  rounded-md text-[var(--text-color)]  focus:ring-1 focus:ring-[var(--primary-button)] focus:border-[var(--primary-button)] transition-all"
           />
           <p className="text-sm text-[var(--muted-text)] mt-1">
             The base URL of your CouchDB instance (without workspace ID).

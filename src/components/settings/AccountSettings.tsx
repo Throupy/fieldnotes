@@ -3,14 +3,23 @@ import UserProfilePicture from "../UserProfilePicture";
 
 interface AccountSettingsProps {
   user: string | null;
+  updateProfile: (data: {
+    profilePic?: File;
+    email?: string;
+    password?: string;
+    currentPassword?: string;
+  }) => Promise<boolean>;
 }
 
-const AccountSettings: React.FC<AccountSettingsProps> = ({ user, updateProfile }) => {
-  const [showEmailModal, setShowEmailModal] = useState(false)
-  const [showPasswordModal, setShowPasswordModal] = useState(false)
-  const [newEmail, setNewEmail] = useState("")
-  const [newPassword, setNewPassword] = useState("")
-  const [currentPassword, setCurrentPassword] = useState("")
+const AccountSettings: React.FC<AccountSettingsProps> = ({
+  user,
+  updateProfile,
+}) => {
+  const [showEmailModal, setShowEmailModal] = useState(false);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [newEmail, setNewEmail] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [currentPassword, setCurrentPassword] = useState("");
   const [emailError, setEmailError] = useState<string | null>(null);
   const [passwordError, setPasswordError] = useState<string | null>(null);
 
@@ -20,16 +29,17 @@ const AccountSettings: React.FC<AccountSettingsProps> = ({ user, updateProfile }
 
   // iamge click -> update pfp
   const handleImageClick = () => {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'image/*';
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/*";
     input.onchange = async (e) => {
-      const file = e.target.files?.[0];
+      const target = e.target as HTMLInputElement | null;
+      const file = target?.files?.[0];
       if (file) {
         const success = await updateProfile({ profilePic: file });
         if (!success) {
           // TODO: toast or something
-          console.error('Failed to update profile picture');
+          console.error("Failed to update profile picture");
         }
       }
     };
@@ -37,32 +47,45 @@ const AccountSettings: React.FC<AccountSettingsProps> = ({ user, updateProfile }
   };
 
   const handleEmailUpdate = async () => {
-    if (newEmail) {
-      setEmailError(null);
-      const success = await updateProfile({ email: newEmail });
-      if (success) {
-        setShowEmailModal(false);
-        setNewEmail("");
-      } else {
-        setEmailError("Failed to update email");
-      }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!newEmail.match(emailRegex)) {
+      setEmailError("Invalid email format");
+      return;
+    }
+    if (newEmail.length >= 50) {
+      setEmailError("Email must be less than 50 characters");
+      return;
+    }
+    setEmailError(null);
+    const success = await updateProfile({ email: newEmail });
+    if (success) {
+      setShowEmailModal(false);
+      setNewEmail("");
+    } else {
+      setEmailError("Failed to update email");
     }
   };
 
   const handlePasswordUpdate = async () => {
-    if (newPassword && currentPassword) {
-      setPasswordError(null);
-      const success = await updateProfile({ 
-        password: newPassword, 
-        currentPassword 
-      });
-      if (success) {
-        setShowPasswordModal(false);
-        setNewPassword("");
-        setCurrentPassword("");
-      } else {
-        setPasswordError("Failed to update password");
-      }
+    if (newPassword.length <= 6) {
+      setPasswordError("Password must be more than 6 characters");
+      return;
+    }
+    if (!currentPassword) {
+      setPasswordError("Current password is required");
+      return;
+    }
+    setPasswordError(null);
+    const success = await updateProfile({
+      password: newPassword,
+      currentPassword,
+    });
+    if (success) {
+      setShowPasswordModal(false);
+      setNewPassword("");
+      setCurrentPassword("");
+    } else {
+      setPasswordError("Failed to update password");
     }
   };
 
@@ -96,7 +119,9 @@ const AccountSettings: React.FC<AccountSettingsProps> = ({ user, updateProfile }
         <div className="space-y-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-[var(--text-color)]">Email</p>
+              <p className="text-sm font-medium text-[var(--text-color)]">
+                Email
+              </p>
               <p className="text-sm text-[var(--muted-text)]">{user.email}</p>
             </div>
             <button
@@ -109,12 +134,14 @@ const AccountSettings: React.FC<AccountSettingsProps> = ({ user, updateProfile }
 
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-[var(--text-color)]">Password</p>
+              <p className="text-sm font-medium text-[var(--text-color)]">
+                Password
+              </p>
               <p className="text-sm text-[var(--muted-text)]">
                 Change your password to login to your account.
               </p>
             </div>
-            <button 
+            <button
               onClick={() => setShowPasswordModal(true)}
               className="bg-[var(--bg-color)] shadow-md border border-[var(--sidebar-border)] text-[var(--text-color)] py-1 px-3 rounded-md text-sm"
             >
@@ -125,30 +152,35 @@ const AccountSettings: React.FC<AccountSettingsProps> = ({ user, updateProfile }
       </div>
       <div>
         {showEmailModal && (
-          <div className="fixed inset-0 bg-[rgba(0,0,0,0.5)] flex items-center justify-center">
-            <div className="bg-[var(--bg-color)] p-6 rounded-lg">
+          <div className="fixed inset-0 bg-[rgba(0,0,0,0.7)] flex items-center justify-center">
+            <div className="bg-[var(--bg-color)] p-6 rounded-lg w-full max-w-lg">
               <h3 className="text-lg font-semibold mb-4">Change Email</h3>
               <input
                 type="email"
                 value={newEmail}
                 onChange={(e) => setNewEmail(e.target.value)}
                 className="w-full p-2 mb-4 border rounded-md"
-                placeholder="New email"
+                placeholder={user.email}
               />
               {emailError && (
                 <p className="text-red-500 text-sm mb-4">{emailError}</p>
               )}
               <div className="flex justify-end space-x-2">
-                <button 
+                <button
                   onClick={() => {
                     setShowEmailModal(false);
                     setEmailError(null);
-                  }} 
+                  }}
                   className="px-4 py-2"
                 >
                   Cancel
                 </button>
-                <button onClick={handleEmailUpdate} className="px-4 py-2 bg-blue-500 rounded-md">Save</button>
+                <button
+                  onClick={handleEmailUpdate}
+                  className="px-4 py-2 bg-blue-500 rounded-md"
+                >
+                  Save
+                </button>
               </div>
             </div>
           </div>
@@ -156,7 +188,7 @@ const AccountSettings: React.FC<AccountSettingsProps> = ({ user, updateProfile }
 
         {showPasswordModal && (
           <div className="fixed inset-0 bg-[rgba(0,0,0,0.5)] flex items-center justify-center">
-            <div className="bg-[var(--bg-color)] p-6 rounded-lg">
+            <div className="bg-[var(--bg-color)] p-6 w-full max-w-lg rounded-lg">
               <h3 className="text-lg font-semibold mb-4">Change Password</h3>
               <input
                 type="password"
@@ -176,16 +208,21 @@ const AccountSettings: React.FC<AccountSettingsProps> = ({ user, updateProfile }
                 <p className="text-red-500 text-sm mb-4">{passwordError}</p>
               )}
               <div className="flex justify-end space-x-2">
-                <button 
+                <button
                   onClick={() => {
                     setShowPasswordModal(false);
                     setPasswordError(null);
-                  }} 
+                  }}
                   className="px-4 py-2"
                 >
                   Cancel
                 </button>
-                <button onClick={handlePasswordUpdate} className="px-4 py-2 bg-blue-500 rounded-md">Save</button>
+                <button
+                  onClick={handlePasswordUpdate}
+                  className="px-4 py-2 bg-blue-500 rounded-md"
+                >
+                  Save
+                </button>
               </div>
             </div>
           </div>

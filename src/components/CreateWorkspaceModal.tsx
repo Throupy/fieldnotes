@@ -8,16 +8,27 @@ interface ModalProps {
 
 const CreateWorkspaceModal: React.FC<ModalProps> = ({ isOpen, onClose, onSubmit }) => {
   const [inputValue, setInputValue] = useState('')
+  const [error, setError] = useState('')
 
   if (!isOpen) return null
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
+    if (inputValue.trim().length > 15) {
+      setError('Workspace name must be 15 characters or less.')
+      return
+    }
     if (inputValue.trim()) {
       onSubmit(inputValue)
       setInputValue('')
+      setError('')
       onClose()
     }
+  }
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValue(e.target.value)
+    if (error) setError('') // Clear error when user starts typing
   }
 
   return (
@@ -34,11 +45,12 @@ const CreateWorkspaceModal: React.FC<ModalProps> = ({ isOpen, onClose, onSubmit 
           <input
             type="text"
             value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
+            onChange={handleInputChange}
             placeholder='Enter workspace name...'
-            className="w-full p-2 border border-[var(--active-item)] rounded-md mb-4 focus:outline-none focus:ring-2 focus:ring-[var(--active-item)] focus:border-transparent"
+            className="w-full p-2 border border-[var(--active-item)] rounded-md mb-2 focus:outline-none focus:ring-2 focus:ring-[var(--active-item)] focus:border-transparent"
             autoFocus
           />
+          {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
           <div className="flex justify-end gap-2">
             <button
               type="submit"

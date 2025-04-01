@@ -293,6 +293,10 @@ app.post('/workspaces', async (request, response) => {
     if (!workspaceName) {
         return response.status(400).json({ error: 'Workspace name is required' });
     }
+
+    if (workspaceName.length > 15) {
+        return response.status(400).json({ error: 'Workspace name must be less than 15 characters' });
+    }
     
     try {
         const sessionResponse = await fetch('http://localhost:5984/_session', {
