@@ -81,6 +81,12 @@ const createWorkspaceDB = async (workspaceId, ownerUsername) => {
 
         if (!securityResponse.ok) throw new Error('Failed to set security settings');
         
+        return {
+            workspaceId,
+            ownerUsername,
+            memberCount: 1
+        }
+
         return new PouchDB(`http://localhost:5984/${workspaceId}`, { skip_setup: true });
     } catch (error) {
         console.error(`Error creating workspace ${workspaceId}:`, error);
@@ -204,8 +210,16 @@ app.post('/register', registerLimiter, upload.single('profilePic'), async (reque
 
     try {
         console.log("startin gsingup")
+        const personalWorkspace = await createWorkspaceDB(personalWorkspaceId, username);
+        console.log("Created personal workspace: ", personalWorkspace);
+
         await usersDB.signUp(username, password, {
-            metadata: { role: 'user', workspaces: [personalWorkspaceId], email: email }
+            metadata: {
+                role: 'user',
+                ownedWorkspaces: [personalWorkspace],
+                sharedWorkspaces: [],
+                email: email
+            }
         })
         console.log('User registered successfully');
         const userDoc = await usersDB.get(`org.couchdb.user:${username}`);
@@ -257,7 +271,6 @@ app.post('/login', loginLimiter, async (request, response) => {
         console.log("Session data: ", sessionData);
 
         const userDoc = await usersDB.get(`org.couchdb.user:${username}`, { attachments: true });
-        const workspaceIds = userDoc.workspaces || [];
     
         let profilePicture = null;
         if (userDoc._attachments?.profilePic) {
@@ -275,7 +288,14 @@ app.post('/login', loginLimiter, async (request, response) => {
         // Set CouchDB session cookie
         console.log("Returning email", email)
         response.cookie('AuthSession', sessionToken, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax' });
-        response.json({ message: 'Login successful', username, email, workspaceIds, profilePicture });
+        response.json({
+            message: 'Login successful',
+            username,
+            email,
+            ownedWorkspaces: userDoc.ownedWorkspaces || [],
+            sharedWorkspaces: userDoc.sharedWorkspaces || [],
+            profilePicture
+        });
     } catch (err) {
         console.error('Login error:', err);
         response.status(401).json({ error: 'Invalid credentials' });
@@ -318,26 +338,109 @@ app.post('/workspaces', async (request, response) => {
         }
         
         const workspaceId = `workspace_${username.toLowerCase()}_${workspaceName.toLowerCase().replace(/\s+/g, '_')}`;
+        const workspaceInfo = await createWorkspaceDB(workspaceId, username);
         
-        await createWorkspaceDB(workspaceId, username);
         
         const userDoc = await usersDB.get(`org.couchdb.user:${username}`);
-        const workspaces = userDoc.workspaces || [];
+        const ownedWorkspaces = userDoc.ownedWorkspaces || [];
         
-        if (!workspaces.includes(workspaceId)) {
-            userDoc.workspaces = [...workspaces, workspaceId];
+        if (!ownedWorkspaces.some(ws => ws.workspaceId === workspaceId)) {
+            userDoc.ownedWorkspaces = [...ownedWorkspaces, workspaceInfo];
             await usersDB.put(userDoc);
         }
         
         response.status(201).json({ 
             message: 'Workspace created successfully', 
-            workspaceId,
-            workspaceName
+            workspace: workspaceInfo
         });
     } catch (error) {
         console.error('Error creating workspace:', error);
         response.status(500).json({ error: `Failed to create workspace: ${error.message}` });
     }
+});
+
+app.post('/workspaces/invite', async (request, response) => {
+    const authSession = request.cookies?.AuthSession
+    const { workspaceId, inviteeUsername } = request.body;
+
+    if (!authSession || !workspaceId || !inviteeUsername) {
+        return response.status(401).json({ error: 'Missing required fields' });
+    }
+
+    try {
+        // validate session
+        const sessionRes = await fetch('http://localhost:5984/_session', {
+            method: 'GET',
+            headers: {
+                'Cookie': `AuthSession=${authSession}`
+            }
+        });
+
+        if (!sessionRes.ok) {
+            return response.status(401).json({ error: 'Invalid session' });
+        }
+
+        const sessionData = await sessionRes.json();
+        const ownerUsername = sessionData.userCtx.name;
+
+        const ownerDoc = await usersDB.get(`org.couchdb.user:${ownerUsername}`);
+        console.log(ownerDoc)
+        const workspace = ownerDoc.ownedWorkspaces?.find(ws => ws.workspaceId === workspaceId);
+
+        if (!workspace) {
+            return response.status(403).json({ error: 'You do not have permission to invite users to this workspace' });
+        }
+
+        
+        const securityUrl = `http://localhost:5984/${workspaceId}/_security`;
+
+        const currentSecRes = await fetch(securityUrl, {
+            headers: {
+                'Authorization': `Basic ${Buffer.from(`${process.env.COUCHDB_ADMIN_USERNAME}:${process.env.COUCHDB_ADMIN_PASSWORD}`).toString('base64')}`
+            }
+        });
+        const currentSecurity = await currentSecRes.json();
+
+        const updatedSecurity = {
+            ...currentSecurity,
+            members: {
+                names: Array.from(new Set([...(currentSecurity.members?.names || []), inviteeUsername])),
+                roles: currentSecurity.members?.roles || []
+            }
+        };
+
+        const updateSecRes = await fetch(securityUrl, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Basic ${Buffer.from(`${process.env.COUCHDB_ADMIN_USERNAME}:${process.env.COUCHDB_ADMIN_PASSWORD}`).toString('base64')}`
+            },
+            body: JSON.stringify(updatedSecurity)
+        });
+
+        if (!updateSecRes.ok) throw new Error('Failed to update workspace security');
+
+        // update the invitee's user document to add the workspace
+        const inviteeDoc = await usersDB.get(`org.couchdb.user:${inviteeUsername}`);
+        console.log("Invitee doc: ", inviteeDoc)
+        const sharedWorkspaces = inviteeDoc.sharedWorkspaces || [];
+        const sharedWorkspaceEntry = { workspaceId, ownerUsername };
+        if (!sharedWorkspaces.some(ws => ws.workspaceId === workspaceId)) {
+            inviteeDoc.sharedWorkspaces = [...sharedWorkspaces, sharedWorkspaceEntry];
+            await usersDB.put(inviteeDoc);
+        }
+        console.log("Updated Invitee doc: ", inviteeDoc)
+
+        const workspaceIndex = ownerDoc.ownedWorkspaces.findIndex(ws => ws.workspaceId === workspaceId);
+        ownerDoc.ownedWorkspaces[workspaceIndex].memberCount = updatedSecurity.members.names.length;
+        await usersDB.put(ownerDoc);
+
+        response.status(200).json({ message: 'Invite sent successfully', workspaceId });
+    } catch (err) {
+        console.error('Error sending invite:', err);
+        response.status(500).json({ error: 'Failed to send invite' });
+    }
+
 });
 
 // test rotue - verify token
