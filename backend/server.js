@@ -84,15 +84,27 @@ const createWorkspaceDB = async (workspaceId, ownerUsername) => {
         return {
             workspaceId,
             ownerUsername,
-            memberCount: 1
+            members: [ownerUsername]
         }
-
-        return new PouchDB(`http://localhost:5984/${workspaceId}`, { skip_setup: true });
     } catch (error) {
         console.error(`Error creating workspace ${workspaceId}:`, error);
         throw error;
     }
 };
+
+const getWorkspaceMembers = async (workspaceId) => {
+    const securityUrl = `http://localhost:5984/${workspaceId}/_security`;
+    const response = await fetch(securityUrl, {
+        headers: {
+            'Authorization': `Basic ${Buffer.from(`${process.env.COUCHDB_ADMIN_USERNAME}:${process.env.COUCHDB_ADMIN_PASSWORD}`).toString('base64')}`
+        }
+    });
+    if (!response.ok) {
+        throw new Error(`Failed to fetch workspace members: ${response.statusText}`);
+    }
+    const securityDoc = await response.json();
+    return securityDoc.members.names || [];
+}
 
 const SECRET_KEY = process.env.JWT_SECRET || 'supersecret';
 
@@ -198,8 +210,6 @@ app.post('/update-profile', upload.single('profilePic'), async (request, respons
 });
 
 app.post('/register', registerLimiter, upload.single('profilePic'), async (request, response) => {
-    console.log(request.body)
-    console.log(request.file)
     const { email, username, password } = request.body;
     const profilePic = request.file;
     const personalWorkspaceId = `workspace_${username.toLowerCase()}_personal`;
@@ -216,7 +226,11 @@ app.post('/register', registerLimiter, upload.single('profilePic'), async (reque
         await usersDB.signUp(username, password, {
             metadata: {
                 role: 'user',
-                ownedWorkspaces: [personalWorkspace],
+                ownedWorkspaces: [{
+                    workspaceId: personalWorkspaceId,
+                    ownerUsername: username,
+                    members: [username],
+                }],
                 sharedWorkspaces: [],
                 email: email
             }
@@ -272,6 +286,15 @@ app.post('/login', loginLimiter, async (request, response) => {
 
         const userDoc = await usersDB.get(`org.couchdb.user:${username}`, { attachments: true });
     
+        // get the members for each of the workspaces (append to response - cannot get direcly)
+        const ownedWorkspaces = await Promise.all(
+            (userDoc.ownedWorkspaces || []).map(async (workspace) => ({
+                ...workspace,
+                members: await getWorkspaceMembers(workspace.workspaceId)
+            }))
+        );
+        const sharedWorkspaces = userDoc.sharedWorkspaces || [];
+
         let profilePicture = null;
         if (userDoc._attachments?.profilePic) {
             const { content_type, data } = userDoc._attachments.profilePic;
@@ -292,8 +315,8 @@ app.post('/login', loginLimiter, async (request, response) => {
             message: 'Login successful',
             username,
             email,
-            ownedWorkspaces: userDoc.ownedWorkspaces || [],
-            sharedWorkspaces: userDoc.sharedWorkspaces || [],
+            ownedWorkspaces,
+            sharedWorkspaces,
             profilePicture
         });
     } catch (err) {
@@ -340,13 +363,12 @@ app.post('/workspaces', async (request, response) => {
         const workspaceId = `workspace_${username.toLowerCase()}_${workspaceName.toLowerCase().replace(/\s+/g, '_')}`;
         const workspaceInfo = await createWorkspaceDB(workspaceId, username);
         
-        
         const userDoc = await usersDB.get(`org.couchdb.user:${username}`);
         const ownedWorkspaces = userDoc.ownedWorkspaces || [];
-        
+
         if (!ownedWorkspaces.some(ws => ws.workspaceId === workspaceId)) {
-            userDoc.ownedWorkspaces = [...ownedWorkspaces, workspaceInfo];
-            await usersDB.put(userDoc);
+          userDoc.ownedWorkspaces = [...ownedWorkspaces, workspaceInfo];
+          await usersDB.put(userDoc);
         }
         
         response.status(201).json({ 
@@ -424,7 +446,7 @@ app.post('/workspaces/invite', async (request, response) => {
         const inviteeDoc = await usersDB.get(`org.couchdb.user:${inviteeUsername}`);
         console.log("Invitee doc: ", inviteeDoc)
         const sharedWorkspaces = inviteeDoc.sharedWorkspaces || [];
-        const sharedWorkspaceEntry = { workspaceId, ownerUsername };
+        const sharedWorkspaceEntry = { workspaceId, ownerUsername, members: updatedSecurity.members.names };
         if (!sharedWorkspaces.some(ws => ws.workspaceId === workspaceId)) {
             inviteeDoc.sharedWorkspaces = [...sharedWorkspaces, sharedWorkspaceEntry];
             await usersDB.put(inviteeDoc);
@@ -432,7 +454,10 @@ app.post('/workspaces/invite', async (request, response) => {
         console.log("Updated Invitee doc: ", inviteeDoc)
 
         const workspaceIndex = ownerDoc.ownedWorkspaces.findIndex(ws => ws.workspaceId === workspaceId);
-        ownerDoc.ownedWorkspaces[workspaceIndex].memberCount = updatedSecurity.members.names.length;
+        ownerDoc.ownedWorkspaces[workspaceIndex] = {
+            ...ownerDoc.ownedWorkspaces[workspaceIndex],
+            members: updatedSecurity.members.names
+          };
         await usersDB.put(ownerDoc);
 
         response.status(200).json({ message: 'Invite sent successfully', workspaceId });
@@ -458,5 +483,47 @@ app.get('/me', (request, response) => {
         response.json(user);
     });
 });
+
+app.get('/session', async (request, response) => {
+    const authSession = request.cookies?.AuthSession;
+    if (!authSession) return response.status(401).json({ error: 'Not authenticated' });
+  
+    const sessionRes = await fetch('http://localhost:5984/_session', {
+      method: 'GET',
+      headers: { 'Cookie': `AuthSession=${authSession}` }
+    });
+    if (!sessionRes.ok) return response.status(401).json({ error: 'Invalid session' });
+  
+    const sessionData = await sessionRes.json();
+    const username = sessionData.userCtx.name;
+    if (!username) return response.status(401).json({ error: 'User not authenticated' });
+  
+    const userDoc = await usersDB.get(`org.couchdb.user:${username}`, { attachments: true });
+    const ownedWorkspaces = await Promise.all(
+      (userDoc.ownedWorkspaces || []).map(async (ws) => ({
+        ...ws,
+        members: await getWorkspaceMembers(ws.workspaceId)
+      }))
+    );
+    const sharedWorkspaces = await Promise.all(
+      (userDoc.sharedWorkspaces || []).map(async (ws) => ({
+        ...ws,
+        members: await getWorkspaceMembers(ws.workspaceId)
+      }))
+    );
+    let profilePicture = null;
+    if (userDoc._attachments?.profilePic) {
+      const { content_type, data } = userDoc._attachments.profilePic;
+      profilePicture = `data:${content_type};base64,${data}`;
+    }
+  
+    response.json({
+      username,
+      email: userDoc.email,
+      ownedWorkspaces,
+      sharedWorkspaces,
+      profilePicture
+    });
+  });
 
 app.listen(port, () => console.log(`Auth server running on localhost port ${port}`))

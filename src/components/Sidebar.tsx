@@ -191,7 +191,7 @@ const Sidebar = () => {
         </div>
         <div className="px-3 py-1.5">{renderPages(null)}</div>
         <div
-          className="absolute top-0 right-[-5px] w-2.5 h-full cursor-ew-resize bg-transparent z-10 hover:bg-white/20 active:bg-white/30"
+          className="absolute top-0 right-[-10px] w-4 h-full cursor-ew-resize bg-transparent z-10 hover:bg-white/20 active:bg-white/30"
           onMouseDown={startResizing}
         ></div>
       </div>

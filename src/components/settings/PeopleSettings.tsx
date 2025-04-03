@@ -41,7 +41,7 @@ const PeopleSettings: React.FC = () => {
               Member Count
             </p>
             <p className="text-sm text-[var(--muted-text)]">
-              {currentWorkspace.memberCount || 'Unknown'}
+              {currentWorkspace.members.length || 'Unknown'}
             </p>
           </div>
         </div>
@@ -66,6 +66,22 @@ const PeopleSettings: React.FC = () => {
               {lastUpdated ? new Date(lastUpdated).toLocaleString() : "—"}
             </p>
           </div>
+        </div>
+      </div>
+
+      <div>
+        <h3 className="text-lg font-semibold mb-4">Workspace Members</h3>
+        <div className="grid grid-cols-3 gap-4">
+          {currentWorkspace.members.map((member, index) => (
+            <div
+              key={index}
+              className="bg-[var(--bg-color)] p-4 rounded-lg border border-[var(--sidebar-border)]"
+            >
+              <p className="text-sm font-medium text-[var(--text-color)]">
+                {member}
+              </p>
+            </div>
+          ))}
         </div>
       </div>
     </div>

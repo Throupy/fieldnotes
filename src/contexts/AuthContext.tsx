@@ -4,13 +4,14 @@ import { setWorkspace } from '../services/db'
 type OwnedWorkspace = {
   workspaceId: string,
   ownerUsername: string,
-  memberCount: number,
+  members: string[],
   name?: string // derive from id or get from backend
 }
 
 type SharedWorkspace = {
   workspaceId: string,
   ownerUsername: string,
+  members: string[],
   name?: string // derive from id or get from backend
 }
 
@@ -75,11 +76,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     // Check if user is already logged in via cookie
-    fetch(`${authUrl}/login`, { credentials: 'include' })
+    fetch(`${authUrl}/session`, { credentials: 'include' })
         .then(res => res.ok ? res.json() : Promise.reject())
         .then(data => {
           const owned = (data.ownedWorkspaces || []).map((ws: OwnedWorkspace) => ({
-            ...WSH,
+            ...ws,
             name: idToName(ws.workspaceId) // Derive name if backend doesn't provide it
           }))
           const shared = (data.sharedWorkspaces || []).map((ws: SharedWorkspace) => ({
@@ -87,7 +88,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             name: idToName(ws.workspaceId) // Derive name if backend doesn't provide it
           }))
           setUser({
-            username: data.name,
+            username: data.username,
             email: data.email,
             ownedWorkspaces: owned,
             sharedWorkspaces: shared,
