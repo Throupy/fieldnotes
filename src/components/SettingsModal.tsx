@@ -8,6 +8,7 @@ import {
   KeyIcon,
   UsersIcon,
   SquareArrowUpRightIcon,
+  HammerIcon,
   CogIcon
 } from "lucide-react";
 import { useAuth } from "../contexts/AuthContext";
@@ -17,6 +18,7 @@ import ConnectionSettings from "./settings/ConnectionSettings";
 import { DialogContent } from "../components/ui/dialog";
 import PeopleSettings from "./settings/PeopleSettings";
 import UserProfilePicture from "./UserProfilePicture";
+import GeneralSettings from "./settings/GeneralSettings";
 
 const SettingsModal = () => {
   const [activeSection, setActiveSection] = useState("User");
@@ -74,18 +76,23 @@ const SettingsModal = () => {
         </nav>
       </div>
 
-      <div className="flex-1 p-6 overflow-y-auto">
-        <div className="mb-6">
-          <h2 className="text-2xl font-bold">{activeSection}</h2>
-        </div>
-        <div className="bg-[var(--sidebar-bg)] shadow-lg p-4 rounded-[var(--border-radius)] border border-[var(--sidebar-border)]">
-          {activeSection === "User" && (
-            <AccountSettings user={user} updateProfile={updateProfile} />
-          )}
-          {activeSection === "Preferences" && <PreferenceSettings />}
-          {activeSection === "Connection" && <ConnectionSettings />}
-          {activeSection === "People" && <PeopleSettings />}
-        </div>
+      <div className="flex-1 p-10 overflow-y-auto">
+        {activeSection === user?.username && (
+          <AccountSettings user={user} updateProfile={updateProfile} />
+        )}
+        {activeSection === "Preferences" && <PreferenceSettings />}
+        {activeSection === "Connection" && <ConnectionSettings />}
+        {activeSection === "People" && <PeopleSettings />}
+        {activeSection === "General" && <GeneralSettings />}
+        {!["Preferences", "Connection", "People", "General", user?.username].includes(activeSection) && (
+            <div className="flex flex-col items-center justify-start mt-20 overflow-hidden">
+            <HammerIcon size="64" className=" mb-4" />
+            <h2 className="text-xl font-semibold mb-2">Under Construction</h2>
+            <p className="text-sm">
+              Owen is working hard to bring this feature to you. Stay tuned!
+            </p>
+            </div>
+        )}
       </div>
     </DialogContent>
   );

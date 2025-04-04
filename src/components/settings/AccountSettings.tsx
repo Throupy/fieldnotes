@@ -92,7 +92,7 @@ const AccountSettings: React.FC<AccountSettingsProps> = ({
   return (
     <div className="space-y-8">
       <div>
-        <h3 className="text-lg font-semibold mb-4">Account</h3>
+        <h3 className="text-lg mb-4">Account</h3>
         <div className="flex items-center space-x-4">
           <div
             className="w-16 h-16 rounded-full flex items-center justify-center  text-2xl cursor-pointer"
@@ -115,7 +115,7 @@ const AccountSettings: React.FC<AccountSettingsProps> = ({
       </div>
 
       <div>
-        <h3 className="text-lg font-semibold mb-4">Account security</h3>
+        <h3 className="text-lg mb-4">Account security</h3>
         <div className="space-y-6">
           <div className="flex items-center justify-between">
             <div>
@@ -154,7 +154,7 @@ const AccountSettings: React.FC<AccountSettingsProps> = ({
         {showEmailModal && (
           <div className="fixed inset-0 bg-[rgba(0,0,0,0.7)] flex items-center justify-center">
             <div className="bg-[var(--bg-color)] p-6 rounded-lg w-full max-w-lg">
-              <h3 className="text-lg font-semibold mb-4">Change Email</h3>
+              <h3 className="text-lg mb-4">Change Email</h3>
               <input
                 type="email"
                 value={newEmail}
@@ -189,7 +189,7 @@ const AccountSettings: React.FC<AccountSettingsProps> = ({
         {showPasswordModal && (
           <div className="fixed inset-0 bg-[rgba(0,0,0,0.5)] flex items-center justify-center">
             <div className="bg-[var(--bg-color)] p-6 w-full max-w-lg rounded-lg">
-              <h3 className="text-lg font-semibold mb-4">Change Password</h3>
+              <h3 className="text-lg mb-4">Change Password</h3>
               <input
                 type="password"
                 value={currentPassword}

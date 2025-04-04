@@ -16,7 +16,7 @@ const PreferenceSettings: React.FC = () => {
   return (
     <div className="space-y-8">
       <div>
-        <h3 className="text-lg font-semibold mb-4">Preferences</h3>
+        <h3 className="text-lg mb-6">Preferences</h3>
         <div className="flex items-center justify-between">
           <div>
             <p className="text-sm font-medium text-[var(--text-color)]">
