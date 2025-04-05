@@ -10,4 +10,7 @@ declare global {
       resetZoom: () => void;
     };
   }
+  electronAuth: {
+    isAuthReachable: (authUrl: string) => Promise<boolean>;
+  };
 }

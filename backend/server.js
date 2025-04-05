@@ -484,6 +484,12 @@ app.get('/me', (request, response) => {
     });
 });
 
+// pingpong for initial auth connection test
+app.head("/ping", async (request, response) => {
+    console.log("Responding pong...")
+    response.sendStatus(200);
+});
+
 app.get('/session', async (request, response) => {
     const authSession = request.cookies?.AuthSession;
     if (!authSession) return response.status(401).json({ error: 'Not authenticated' });

@@ -5,6 +5,10 @@ contextBridge.exposeInMainWorld("electron", {
   receive: (channel, callback) => ipcRenderer.on(channel, (event, ...args) => callback(...args)),
 });
 
+contextBridge.exposeInMainWorld("electronAuth", {
+    isAuthReachable: async(authUrl) => ipcRenderer.invoke("auth:ping", authUrl)
+})
+
 contextBridge.exposeInMainWorld("electronZoom", {
   getZoomLevel: () => webFrame.getZoomLevel(),
   setZoomLevel: (level) => webFrame.setZoomLevel(level),
