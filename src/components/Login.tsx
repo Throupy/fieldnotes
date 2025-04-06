@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 
 const Login = () => {
@@ -10,6 +10,10 @@ const Login = () => {
   const [profilePic, setProfilePic] = useState<File | null>(null);
   const [isRegister, setIsRegister] = useState(false);
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    setLocalAuthUrl(authUrl);
+  }, [authUrl])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,7 +48,10 @@ const Login = () => {
               spellCheck="false"
               placeholder="e.g. http://your-auth-server:4000"
               value={localAuthUrl}
-              onChange={(e) => setLocalAuthUrl(e.target.value)}
+              onChange={(e) =>  {
+                setLocalAuthUrl(e.target.value)
+                setAuthUrl(e.target.value)
+              }}
               className="w-full p-3 bg-[var(--sidebar-bg)] border border-[var(--sidebar-border)] rounded-md text-[var(--text-color)] placeholder-gray-400 focus:ring-1 focus:ring-[var(--primary-button)] focus:border-[var(--primary-button)] transition-all"
             />
           </div>

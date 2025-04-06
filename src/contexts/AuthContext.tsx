@@ -61,7 +61,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [currentWorkspace, setCurrentWorkspace] = useState<OwnedWorkspace | SharedWorkspace | null>(null);
   const [authUrl, setAuthUrl] = useState(() => {
     // Load from localStorage, fallback to a default
-    return localStorage.getItem('authUrl') || 'http://localhost:4000';
+    return localStorage.getItem('authUrl') || 'http://localhost:4001';
   });
 
   console.log("AuthProvider called")
