@@ -9,9 +9,16 @@ import rateLimit from 'express-rate-limit';
 import cookieParser from 'cookie-parser';
 import multer from 'multer';
 
+
 dotenv.config()
 const app = express()
 const port = process.env.PORT || 4000; 
+
+if (!process.env.JWT_SECRET) {
+    throw new Error("JWT_SECRET environment varaible must be defined")
+}
+
+const SECRET_KEY = process.env.JWT_SECRET;
 
 const upload = multer({
     storage: multer.memoryStorage(), //passing to couchdb
@@ -21,6 +28,7 @@ const upload = multer({
 })
 
 app.use(express.json());
+
 app.use(cookieParser());
 app.use(cors({
     origin: ['http://localhost:5173', 'http://localhost:5174'],
@@ -40,6 +48,14 @@ const registerLimiter = rateLimit({
     max: 5,
     message: 'Too many registration attempts, please try again later'
 });
+
+const globalLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15m
+    max: 100,
+    message: 'Too many requests, please try again later'
+})
+
+app.use(globalLimiter);
 
 const usersDB = new PouchDB(
     `http://${process.env.COUCHDB_ADMIN_USERNAME}:${process.env.COUCHDB_ADMIN_PASSWORD}@localhost:5984/_users`, {
@@ -105,8 +121,6 @@ const getWorkspaceMembers = async (workspaceId) => {
     const securityDoc = await response.json();
     return securityDoc.members.names || [];
 }
-
-const SECRET_KEY = process.env.JWT_SECRET || 'supersecret';
 
 app.post('/update-profile', upload.single('profilePic'), async (request, response) => {
     const authSession = request.cookies?.AuthSession;
