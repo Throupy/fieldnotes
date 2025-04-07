@@ -108,15 +108,6 @@ const App = () => {
         <div className="page-editor">
           <PageEditor />
         </div>
-        <button
-          onClick={() => {
-            setIsEditingUrl(true)
-            setTempAuthUrl(authUrl)
-          }}
-          className="absolute bottom-4 right-4 bg-gray-200 p-2 rounded"
-        >
-          Change Auth URL
-        </button>
       </div>
     </PageProvider>
   ) : (
