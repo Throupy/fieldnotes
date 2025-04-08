@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   UserIcon,
   PaletteIcon,
@@ -21,9 +21,16 @@ import UserProfilePicture from "./UserProfilePicture";
 import GeneralSettings from "./settings/GeneralSettings";
 
 const SettingsModal = () => {
-  const [activeSection, setActiveSection] = useState("User");
+  const [activeSection, setActiveSection] = useState("");
   const [serverUrl, setServerUrl] = useState("");
   const { user, updateProfile } = useAuth();
+
+  // first mount set the settings to account setings
+  useEffect(() => {
+    if (user?.username) {
+      setActiveSection(user.username);
+    }
+  }, [user?.username]);
 
   const sections = {
     Account: [
