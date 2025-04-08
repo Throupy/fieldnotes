@@ -17,4 +17,35 @@ const usersDB = new PouchDB(
     }
 );
 
-export default usersDB;
+const workspacesDB = new PouchDB(
+    `http://${process.env.COUCHDB_ADMIN_USERNAME}:${process.env.COUCHDB_ADMIN_PASSWORD}@localhost:5984/workspaces`,
+    {
+        auth: {
+            username: process.env.COUCHDB_ADMIN_USERNAME,
+            password: process.env.COUCHDB_ADMIN_PASSWORD,
+        },
+        skip_setup: true,
+    }
+);
+
+
+(async () => {
+    const info = await workspacesDB.info();
+
+    if (info.error === 'not_found') {
+      await fetch('http://localhost:5984/workspaces', {
+        method: "PUT",
+        headers: {
+          Authorization:
+            "Basic " +
+            Buffer.from(
+              `${process.env.COUCHDB_ADMIN_USERNAME}:${process.env.COUCHDB_ADMIN_PASSWORD}`
+            ).toString("base64"),
+        },
+      });
+    } 
+  })();
+
+
+
+export { usersDB, workspacesDB };

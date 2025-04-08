@@ -1,4 +1,6 @@
-export const createWorkspaceDB = async (workspaceId, ownerUsername) => {
+import { workspacesDB } from "../config/db.js";
+
+export const createWorkspaceDB = async (workspaceId, workspaceName, ownerUsername) => {
     try {
         const response = await fetch(`http://localhost:5984/${workspaceId}`, {
             method: "PUT",
@@ -39,11 +41,19 @@ export const createWorkspaceDB = async (workspaceId, ownerUsername) => {
         if (!securityResponse.ok)
             throw new Error("Failed to set security settings");
 
-        return {
-            workspaceId,
-            ownerUsername,
+        const workspaceMetadata = {
+            _id: workspaceId,
+            type: "workspace",
+            name: workspaceName,
+            icon: "📝",
+            owner: ownerUsername,
             members: [ownerUsername],
+            createdAt: new Date().toISOString(),
         };
+
+        await workspacesDB.put(workspaceMetadata);
+
+        return workspaceMetadata;
     } catch (error) {
         console.error(`Error creating workspace ${workspaceId}:`, error);
         throw error;

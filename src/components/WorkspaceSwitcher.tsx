@@ -8,7 +8,16 @@ import InviteUserModal from './InviteUserModal';
 
 const WorkspaceSwitcher: React.FC = () => {
   const { addPage } = usePages();
-  const { ownedWorkspaces, sharedWorkspaces, currentWorkspace, setCurrentWorkspace, createWorkspace, logout, authUrl } = useAuth();
+  const {
+    ownedWorkspaces,
+    sharedWorkspaces,
+    currentWorkspace,
+    setCurrentWorkspace,
+    createWorkspace,
+    logout,
+    authUrl,
+  } = useAuth();
+
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
   const [inviteError, setInviteError] = useState<string | null>(null);
@@ -23,6 +32,9 @@ const WorkspaceSwitcher: React.FC = () => {
 
     setInviteError(null);
     try {
+
+      console.log("Inviting user to workspace:", currentWorkspace, inviteeUsername);
+
       const response = await fetch(`${authUrl}/workspaces/invite`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -34,46 +46,49 @@ const WorkspaceSwitcher: React.FC = () => {
         const errorData = await response.json();
         throw new Error(errorData.error || 'Failed to invite user');
       }
+
       console.log(`Invited ${inviteeUsername} to ${currentWorkspace.name}`);
       setIsInviteModalOpen(false);
-      // TODO: toast ?
-    } catch (err) {
+      // TODO: toast?
+    } catch (err: any) {
       console.error('Invite error:', err);
       setInviteError(err.message);
     }
   };
 
-  const isOwner = currentWorkspace && ownedWorkspaces.some(ws => ws.workspaceId === currentWorkspace.workspaceId);
+  const isOwner = currentWorkspace
+    ? ownedWorkspaces.some(ws => ws.workspaceId === currentWorkspace.workspaceId)
+    : false;
 
   return (
     <div className="flex items-center justify-between w-full rounded-lg hover:bg-[var(--active-item)] shadow-md p-2">
       <Popover>
         <PopoverTrigger asChild>
           <button className="flex items-center space-x-2 transition-all">
-            <span className="text-base">📔</span>
+            <span className="text-base">{currentWorkspace?.icon ?? '📄'}</span>
             <span className="text-base font-medium">
-              {currentWorkspace ? currentWorkspace.name : 'Select Workspace'}
+              {currentWorkspace?.name ?? 'Select Workspace'}
             </span>
             <FaChevronDown className="cursor-pointer text-sm" />
           </button>
         </PopoverTrigger>
 
         <PopoverContent className="text-[var(--muted-text)] w-72 ml-2 p-2 rounded-lg shadow-2xl border border-[var(--sidebar-divider)] bg-[var(--sidebar-bg)]">
-          <div className="flex items-center justify-between px-2 py-1 rounded-md">
-            <div className="flex items-center">
-              <div className="w-6 h-6 rounded-sm mr-2 flex items-center justify-center">
-                <span className="text-3xl">📔</span>
-              </div>
-              <div className="ml-1 flex flex-col">
-                <span className="text-sm font-medium">
-                  {currentWorkspace ? currentWorkspace.name : 'Unknown Workspace'}
-                </span>
-                <span className="text-xs">
-                  Free Plan • {currentWorkspace && 'memberCount' in currentWorkspace ? `${currentWorkspace.memberCount} members` : 'Shared with you'}
-                </span>
+          {currentWorkspace && (
+            <div className="flex items-center justify-between px-2 py-1 rounded-md">
+              <div className="flex items-center">
+                <div className="w-6 h-6 rounded-sm mr-2 flex items-center justify-center">
+                  <span className="text-3xl">{currentWorkspace.icon}</span>
+                </div>
+                <div className="ml-1 flex flex-col">
+                  <span className="text-sm font-medium">{currentWorkspace.name}</span>
+                  <span className="text-xs">
+                    Free Plan • {currentWorkspace.members.length} member{currentWorkspace.members.length !== 1 ? 's' : ''}
+                  </span>
+                </div>
               </div>
             </div>
-          </div>
+          )}
 
           {isOwner && (
             <div className="mb-2 flex items-center justify-between px-2 py-1 rounded-md">
@@ -93,7 +108,7 @@ const WorkspaceSwitcher: React.FC = () => {
             </div>
           )}
 
-          <div className="h-px bg-[var(--sidebar-divider)] my-1"></div>
+          <div className="h-px bg-[var(--sidebar-divider)] my-1" />
 
           {(ownedWorkspaces.length === 0 && sharedWorkspaces.length === 0) ? (
             <p className="text-center text-sm">No workspaces found</p>
@@ -103,7 +118,7 @@ const WorkspaceSwitcher: React.FC = () => {
                 <>
                   <span className="text-xs font-semibold px-2">Your Workspaces</span>
                   <ul className="space-y-1">
-                    {ownedWorkspaces.map((workspace) => (
+                    {ownedWorkspaces.map(workspace => (
                       <li
                         key={workspace.workspaceId}
                         onClick={() => setCurrentWorkspace(workspace)}
@@ -111,9 +126,8 @@ const WorkspaceSwitcher: React.FC = () => {
                           workspace.workspaceId === currentWorkspace?.workspaceId ? 'bg-[var(--active-item)]' : ''
                         }`}
                       >
-                        <span className="mr-1 inline-flex items-center align-middle">
-                          📔 {workspace.name} {workspace.memberCount > 1 ? '(Sharing)' : ''}
-                        </span>
+                        {workspace.icon} {workspace.name}{" "}
+                        {workspace.members.length > 1 ? '(Sharing)' : ''}
                       </li>
                     ))}
                   </ul>
@@ -122,10 +136,10 @@ const WorkspaceSwitcher: React.FC = () => {
 
               {sharedWorkspaces.length > 0 && (
                 <>
-                  <div className="h-px bg-[var(--sidebar-divider)] my-1"></div>
+                  <div className="h-px bg-[var(--sidebar-divider)] my-1" />
                   <span className="text-xs font-semibold px-2">Shared with You</span>
                   <ul className="space-y-1">
-                    {sharedWorkspaces.map((workspace) => (
+                    {sharedWorkspaces.map(workspace => (
                       <li
                         key={workspace.workspaceId}
                         onClick={() => setCurrentWorkspace(workspace)}
@@ -133,9 +147,7 @@ const WorkspaceSwitcher: React.FC = () => {
                           workspace.workspaceId === currentWorkspace?.workspaceId ? 'bg-[var(--active-item)]' : ''
                         }`}
                       >
-                        <span className="mr-1 inline-flex items-center align-middle">
-                          📔 {workspace.name} (by {workspace.ownerUsername})
-                        </span>
+                        📔 {workspace.name} (by {workspace.ownerUsername})
                       </li>
                     ))}
                   </ul>
@@ -144,7 +156,7 @@ const WorkspaceSwitcher: React.FC = () => {
             </>
           )}
 
-          <div className="h-px bg-[var(--sidebar-divider)] my-1"></div>
+          <div className="h-px bg-[var(--sidebar-divider)] my-1" />
           <ul className="flex flex-col">
             <li>
               <button
@@ -162,7 +174,7 @@ const WorkspaceSwitcher: React.FC = () => {
             <li>
               <button
                 className="rounded-md text-red-500 w-full text-left px-2 py-2 text-sm hover:bg-[var(--active-item)] hover:text-red-600 transition-all"
-                onClick={() => logout()}
+                onClick={logout}
               >
                 Log out
               </button>
@@ -173,8 +185,8 @@ const WorkspaceSwitcher: React.FC = () => {
 
       <button className="transition-all">
         <FaPenToSquare
-          className="w-4 h-4 cursor-pointer hover:"
-          onClick={() => addPage('Untitled Page', null)}
+          className="w-4 h-4 cursor-pointer"
+          onClick={() => addPage('Untitled Page')}
         />
       </button>
 
@@ -188,7 +200,7 @@ const WorkspaceSwitcher: React.FC = () => {
           isOpen={isInviteModalOpen}
           onClose={() => setIsInviteModalOpen(false)}
           onSubmit={handleInviteUser}
-          workspaceId={currentWorkspace.workspaceId}
+          workspace={currentWorkspace}
           error={inviteError}
         />
       )}

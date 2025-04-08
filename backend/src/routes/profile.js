@@ -1,6 +1,6 @@
 import express from "express";
 import multer from "multer";
-import usersDB from "../config/db.js";
+import { usersDB } from "../config/db.js";
 import {
     validateEmail,
     validatePassword,

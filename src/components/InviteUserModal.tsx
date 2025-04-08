@@ -1,17 +1,20 @@
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogTitle } from '../components/ui/dialog';
+import { Workspace } from '../types';
 
 interface InviteUserModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (username: string) => void;
-  workspaceId: string;
+  workspace: Workspace;
   error?: string | null;
 }
 
-const InviteUserModal: React.FC<InviteUserModalProps> = ({ isOpen, onClose, onSubmit, workspaceId, error }) => {
+const InviteUserModal: React.FC<InviteUserModalProps> = ({ isOpen, onClose, onSubmit, workspace, error }) => {
   const [username, setUsername] = useState('');
   const [loading, setLoading] = useState(false);
+
+  console.log("Workspace is ", workspace);
 
   const handleInvite = async () => {
     if (!username.trim()) return;
@@ -29,7 +32,7 @@ const InviteUserModal: React.FC<InviteUserModalProps> = ({ isOpen, onClose, onSu
         <DialogTitle className="hidden" />
         <div className="p-4">
           <p className="text-base font-medium mb-2">
-            Invite user to <span className="font-semibold">{workspaceId.split('_').slice(2).join(' ')}</span>
+            Invite user to <span className="font-semibold">{workspace.name}</span>
           </p>
 
           <input

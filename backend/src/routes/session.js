@@ -1,5 +1,5 @@
 import express from "express";
-import usersDB from "../config/db.js";
+import { usersDB, workspacesDB } from "../config/db.js";
 import { getWorkspaceMembers } from "../utils/workspace.js";
 
 const router = express.Router();
@@ -32,18 +32,36 @@ router.get("/session", async (req, res) => {
     const userDoc = await usersDB.get(`org.couchdb.user:${username}`, {
         attachments: true,
     });
+
+    const ownedWorkspaceIds = userDoc.ownedWorkspaceIds || [];
+    const sharedWorkspaceIds = userDoc.sharedWorkspaceIds || [];
+
     const ownedWorkspaces = await Promise.all(
-        (userDoc.ownedWorkspaces || []).map(async (ws) => ({
-            ...ws,
-            members: await getWorkspaceMembers(ws.workspaceId),
-        }))
+        ownedWorkspaceIds.map(async (id) => {
+            const doc = await workspacesDB.get(id);
+            return {
+                workspaceId: doc._id,
+                name: doc.name,
+                icon: doc.icon,
+                members: doc.members,
+                ownerUsername: doc.owner,
+            };
+        })
     );
+
     const sharedWorkspaces = await Promise.all(
-        (userDoc.sharedWorkspaces || []).map(async (ws) => ({
-            ...ws,
-            members: await getWorkspaceMembers(ws.workspaceId),
-        }))
+        sharedWorkspaceIds.map(async (id) => {
+            const doc = await workspacesDB.get(id);
+            return {
+                workspaceId: doc._id,
+                name: doc.name,
+                icon: doc.icon,
+                members: doc.members,
+                ownerUsername: doc.owner,
+            };
+        })
     );
+
     let profilePicture = null;
     if (userDoc._attachments?.profilePic) {
         const { content_type, data } = userDoc._attachments.profilePic;

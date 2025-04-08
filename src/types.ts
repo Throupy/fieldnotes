@@ -7,3 +7,11 @@ export interface Page {
   createdAt: number;
   updatedAt: number;
 }
+
+export type Workspace = {
+  workspaceId: string;
+  name: string;
+  icon: string;
+  members: string[];
+  ownerUsername: string;
+}
